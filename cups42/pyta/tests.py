@@ -1,7 +1,11 @@
 from django.test import TestCase
 from models import UserInfo
+from models import RequestHistoryEntry
 import views
 from django.core.urlresolvers import reverse
+import random
+import re
+from BeautifulSoup import BeautifulSoup
 
 
 class TestIndexView(TestCase):
@@ -23,3 +27,26 @@ class TestIndexView(TestCase):
         self.assertTrue(self.user.contact_skype in response.content)
         self.assertTrue(self.user.contact_other in response.content)
 
+
+class TestREquestHistoryView(TestCase):
+    def setUp(self):
+        self.request_path = reverse(views.home_view)
+
+    def test_history_entry_creation(self):
+        self.client.get(self.request_path)
+        entry = RequestHistoryEntry.objects.all()[:1][0]
+        self.assertEqual(self.request_path, entry.request_path)
+
+    def test_history_page(self):
+        requests_limit = 10
+        request_path_done = []          #this is requests is done by test
+        request_paths = [reverse(views.home_view), reverse(views.requests_view)]
+        while requests_limit > 0:
+            request = random.choice(request_paths)
+            request_path_done.append(request)
+            requests_limit-=1
+            self.client.get(request)
+        response = self.client.get(reverse(views.requests_view))
+        sp = BeautifulSoup(response.content)
+        requests_table_onpage = [elem.getText() for elem in sp.findAll('td', {'class': 'request-path'})]
+        self.assertEqual(request_path_done, requests_table_onpage)
