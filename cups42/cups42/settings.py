@@ -4,7 +4,11 @@ import south
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = 'v1%#$8(d!6o)o1q8yk1e3v=+*q*!)qzf09=n0zy&f3ihv647q%'
+<<<<<<< HEAD
 
+=======
+SOUTH_TESTS_MIGRATE = False
+>>>>>>> t1_show_user_info
 
 DEBUG = True
 TEMPLATE_DEBUG = True

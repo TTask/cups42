@@ -10,7 +10,11 @@
             <strong>Surname: </strong>{{ user_info.surname }}<br>
         </div>
         <div id="user-birthdate">
+<<<<<<< HEAD
             <strong>Birth date: </strong>{{ user_info.birth_date }}
+=======
+            <strong>Birth date: </strong>{{ user_info.birth_date|date:'Y-m-d' }}
+>>>>>>> t1_show_user_info
         </div>
     </div>
     <div class="user-info contacts">
@@ -30,6 +34,13 @@
             <strong>Other contacts:</strong>
             <p>{{ user_info.contact_other|safe }}</p>
         </div>
+<<<<<<< HEAD
+=======
+        <div id='user-bio'>
+            <strong>BIO:</strong>
+            <p>{{ user_info.bio }}</p>
+        </div>
+>>>>>>> t1_show_user_info
     </div>
 </div>
 {% endblock %}
