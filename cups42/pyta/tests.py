@@ -39,7 +39,7 @@ class TestREquestHistoryView(TestCase):
 
     def test_history_page(self):
         requests_limit = 10
-        request_path_done = []          #this is requests is done by test
+        request_path_done = []          #this is requests done by test
         request_paths = [reverse('home'), reverse('requests')]
         while requests_limit > 0:
             request = random.choice(request_paths)
