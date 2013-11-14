@@ -9,5 +9,6 @@ urlpatterns = patterns('',
     url(r'^edit$', 'pyta.views.edit_view', name='edit'),
     url(r'^login$', 'pyta.views.login_view', name='login'),
     url(r'^logout$', 'pyta.views.logout_view', name='logout'),
+    url(r'^requests$', 'pyta.views.requests_view', name='requests'),
     url(r'^admin/', include(admin.site.urls)),
 )
