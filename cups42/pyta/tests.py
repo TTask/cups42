@@ -1,8 +1,4 @@
 from django.test import TestCase
-<<<<<<< HEAD
-
-# Create your tests here.
-=======
 from models import UserInfo
 import views
 from django.core.urlresolvers import reverse
@@ -26,4 +22,4 @@ class TestIndexView(TestCase):
         self.assertTrue(str(self.user.contact_jabber) in response.content)
         self.assertTrue(self.user.contact_skype in response.content)
         self.assertTrue(self.user.contact_other in response.content)
->>>>>>> t1_show_user_info
+
