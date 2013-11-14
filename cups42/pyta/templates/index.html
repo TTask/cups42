@@ -10,7 +10,7 @@
             <strong>Surname: </strong>{{ user_info.surname }}<br>
         </div>
         <div id="user-birthdate">
-            <strong>Birth date: </strong>{{ user_info.birth_date }}
+            <strong>Birth date: </strong>{{ user_info.birth_date|date:'Y-m-d' }}
         </div>
     </div>
     <div class="user-info contacts">
@@ -29,6 +29,10 @@
         <div id="user-othercontacts">
             <strong>Other contacts:</strong>
             <p>{{ user_info.contact_other|safe }}</p>
+        </div>
+        <div id='user-bio'>
+            <strong>BIO:</strong>
+            <p>{{ user_info.bio }}</p>
         </div>
     </div>
 </div>
