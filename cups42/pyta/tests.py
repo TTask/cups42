@@ -15,7 +15,7 @@ class TestIndexView(TestCase):
         self.user = UserInfo.objects.get(pk=1)
 
     def test_index_view(self):
-        response = self.client.get(reverse(views.home_view))
+        response = self.client.get(reverse('home'))
         self.assertEqual(200, response.status_code)
         self.assertTrue(self.user.name in response.content)
         self.assertTrue(self.user.surname in response.content)
@@ -30,7 +30,7 @@ class TestIndexView(TestCase):
 
 class TestREquestHistoryView(TestCase):
     def setUp(self):
-        self.request_path = reverse(views.home_view)
+        self.request_path = reverse('home')
 
     def test_history_entry_creation(self):
         self.client.get(self.request_path)
@@ -40,13 +40,13 @@ class TestREquestHistoryView(TestCase):
     def test_history_page(self):
         requests_limit = 10
         request_path_done = []          #this is requests is done by test
-        request_paths = [reverse(views.home_view), reverse(views.requests_view)]
+        request_paths = [reverse('home'), reverse('requests')]
         while requests_limit > 0:
             request = random.choice(request_paths)
             request_path_done.append(request)
             requests_limit-=1
             self.client.get(request)
-        response = self.client.get(reverse(views.requests_view))
+        response = self.client.get(reverse('requests'))
         sp = BeautifulSoup(response.content)
         requests_table_onpage = [elem.getText() for elem in sp.findAll('td', {'class': 'request-path'})]
         self.assertEqual(request_path_done, requests_table_onpage)
