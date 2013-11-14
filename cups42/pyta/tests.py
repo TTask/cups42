@@ -1,14 +1,17 @@
 from django.test import TestCase
 from models import UserInfo
+import views
+from django.core.urlresolvers import reverse
 
 
 class TestIndexView(TestCase):
+    
     def setUp(self):
         fixtures = ['initial_data.json']
         self.user = UserInfo.objects.get(pk=1)
 
     def test_index_view(self):
-        response = self.client.get('/')
+        response = self.client.get(reverse(views.home_view))
         self.assertEqual(200, response.status_code)
         self.assertTrue(self.user.name in response.content)
         self.assertTrue(self.user.surname in response.content)
