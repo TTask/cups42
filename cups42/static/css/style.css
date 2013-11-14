@@ -1,0 +1,16 @@
+body {
+    width: 80%;
+    margin: auto;
+}
+
+.user-info{
+    display: inline-block;
+    width: 40%;
+    height: 150px;
+    vertical-align: middle;
+}
+
+#user-othercontacts
+{
+    width: 150px;
+}
