@@ -57,7 +57,7 @@
 		{% for field in edit_form %}
 			{% if field.errors %}
 			<div class="field-error">
-				{{ field.errors }} {{ field.label }}
+				{{ field.label }} {{ field.errors }} 
 			</div>
 			{% endif %}
 		{% endfor %}

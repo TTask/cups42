@@ -3,7 +3,7 @@ from sorl.thumbnail import ImageField
 
 
 class UserInfo(models.Model):
-    photo = ImageField(upload_to="user_media/photo/", verbose_name=u'Photo')
+    photo = ImageField(blank=True, upload_to="user_media/photo/", verbose_name=u'Photo')
     name = models.CharField(max_length=64, null=True, verbose_name=u'Name')
     surname = models.CharField(max_length=64, null=True, verbose_name=u'Surname')
     bio = models.TextField(null=True, verbose_name=u'BIO')
