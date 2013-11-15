@@ -75,3 +75,11 @@ class TestEditView(TestCase):
         self.assertContains(response, "login-table")
         self.assertContains(response, "id_username")
         self.assertContains(response, "id_password")
+
+
+
+    def test_edit_custom_widget(self):
+        self.client.login(username='admin', password='admin')
+        response = self.client.get(reverse('edit'))
+        self.assertIn("('#id_birth_date').datepicker", response.content)
+        

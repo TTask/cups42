@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load static %}
 {% load thumbnail %}
 	<form enctype="multipart/form-data" class="edit-form" method="post" action="{% url 'edit' %}">
 		{% csrf_token %}
@@ -57,10 +58,11 @@
 		{% for field in edit_form %}
 			{% if field.errors %}
 			<div class="field-error">
-				{{ field.errors }} {{ field.label }}
+				{{ field.label }} {{ field.errors }} 
 			</div>
 			{% endif %}
 		{% endfor %}
+		<img id="progress-gif" src="{% static 'images/loading.gif' %}" style="display: none">
 		<input type="submit" value="Save">
 		<a href="{% url 'home' %}">Cancel</a>
 	</form>
