@@ -70,7 +70,7 @@ STATICFILES_FINDERS = (
 
 TEMPLATE_DIRS = (
     'templates/',
-    'pyta/templates/'
+    'pyta/templates/pyta/'
 )
 
 
