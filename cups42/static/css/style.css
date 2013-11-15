@@ -16,3 +16,34 @@ body {
     width: 50%;
     margin: auto;
 }
+
+.right-column
+{
+	display: block;
+	width: 30%;
+}
+
+.edit-form
+{
+	width: 60%;
+	margin: auto;
+	margin-top: 3%;
+}
+.edit-table
+{	
+	height: 130px;
+	width: 43%;
+	display: inline-block;
+	margin: auto;
+}
+
+.bottom-left
+{
+	height: 400px;
+	float: left;
+}
+
+.bottom-right
+{
+	height: 410px;
+}
