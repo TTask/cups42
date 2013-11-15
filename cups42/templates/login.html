@@ -7,6 +7,9 @@
 		<h3>Login</h3>
 		<form action="{% url 'login' %}" method='post'>
 			{% csrf_token %}
+			{% if next %}
+				<input type="hidden" name="next" value="{{ next }}" />
+			{% endif %}
 			<table class="login-table">
 				<tr>
 					<td>{{ form.username.label }}</td>
