@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+	{% if form.errors %}
+		<p> Username or password were invalid</p>
+	{% endif %}
+	<div class='login form'>
+		<h3>Login</h3>
+		<form action="{% url 'login' %}" method='post'>
+			{% csrf_token %}
+			<table class="login-table">
+				<tr>
+					<td>{{ form.username.label }}</td>
+					<td>{{ form.username }}</td>
+				</tr>
+				<tr>
+					<td>{{ form.password.label }}</td>
+					<td>{{ form.password }}</td>
+				</tr>
+			</table>
+			<input type="submit" value="Login">
+		</form>
+	</div>
+{% endblock %}

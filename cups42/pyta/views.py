@@ -2,10 +2,11 @@ from django.shortcuts import render
 from django.shortcuts import render_to_response
 from django.shortcuts import redirect
 from django.template import RequestContext
+from django.core.urlresolvers import reverse
 from models import UserInfo
 from models import RequestHistoryEntry
 from forms import EditUserInfoForm
-
+from django.contrib.auth.decorators import login_required
 
 def home_view(request):
     user_info = UserInfo.objects.get_or_create(pk=1)[0]
@@ -13,25 +14,24 @@ def home_view(request):
         context_instance=RequestContext(request))
 
 
-def login_view(request):
-    pass
-
-
-def logout_view(request):
-    pass
-
-
 def requests_view(request):
     request_entrys = RequestHistoryEntry.objects.all()[:10]
     return render_to_response('requests.html', {'first_requests' : request_entrys}, 
         context_instance=RequestContext(request))
 
+
+@login_required(login_url='/login')
 def edit_view(request):
 	user_info = UserInfo.objects.get_or_create(pk=1)[0]
-	edit_form = EditUserInfoForm(request.POST or None, 
-		request.FILES or None, instance=user_info)
-	if edit_form.is_valid():
-		edit_form.save()
+	if request.method == 'POST':
+		edit_form = EditUserInfoForm(request.POST, request.FILES, instance=user_info)		
+		if edit_form.is_valid():
+			edit_form.save()
+			return redirect(reverse('home'))
+		else:
+			return render_to_response('edit.html', {'edit_form' : edit_form}, 
+				context_instance=RequestContext(request))
 	else:
+		edit_form = EditUserInfoForm(instance=user_info)
 		return render_to_response('edit.html', {'edit_form' : edit_form}, 
 			context_instance=RequestContext(request))

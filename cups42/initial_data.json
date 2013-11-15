@@ -21,7 +21,7 @@
     "pk": 1, 
     "model": "pyta.userinfo", 
     "fields": {
-        "bio": null, 
+        "bio": "I dont know how to write bio, sorry :)", 
         "surname": "Storchak", 
         "name": "Andrey", 
         "contact_email": "andrey.storchak@gmail.com", 

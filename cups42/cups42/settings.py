@@ -9,6 +9,7 @@ SOUTH_TESTS_MIGRATE = False
 
 DEBUG = True
 TEMPLATE_DEBUG = True
+THUMBNAIL_DEBUG = True
 ALLOWED_HOSTS = []
 
 
@@ -35,7 +36,7 @@ MIDDLEWARE_CLASSES = (
     'pyta.middleware.RequestStorage',
 )
 
-
+LOGIN_REDIRECT_URL = '/'
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",

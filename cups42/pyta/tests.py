@@ -28,7 +28,7 @@ class TestIndexView(TestCase):
         self.assertTrue(self.user.contact_other in response.content)
 
 
-class TestREquestHistoryView(TestCase):
+class TestRequestHistoryView(TestCase):
     def setUp(self):
         self.request_path = reverse('home')
 
@@ -50,3 +50,21 @@ class TestREquestHistoryView(TestCase):
         sp = BeautifulSoup(response.content)
         requests_table_onpage = [elem.getText() for elem in sp.findAll('td', {'class': 'request-path'})]
         self.assertEqual(request_path_done, requests_table_onpage)
+
+class TestEditView(TestCase):
+    def setUp(self):
+        fixtures = ['initial_data.json']
+        self.user_info = UserInfo.objects.get(pk=1)
+
+    def test_form_on_page(self):
+        self.client.login(username='admin', password='admin')
+        response = self.client.get(reverse('edit'))
+        self.assertTrue(self.user_info.name in response.content)
+        self.assertTrue(self.user_info.surname in response.content)
+        self.assertTrue(str(self.user_info.birth_date) in response.content)
+        self.assertTrue(self.user_info.contact_email in response.content)
+        self.assertTrue(self.user_info.contact_jabber in response.content)
+        self.assertTrue(self.user_info.contact_skype in response.content)
+        self.assertTrue(self.user_info.contact_phone in response.content)
+        self.assertTrue(str(self.user_info.contact_other) in response.content)
+        self.assertTrue(str(self.user_info.bio) in response.content)

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+{% load thumbnail %}
 <h2>42 Coffee Cups Testing Assigment</h2>
 <div class="user-profile">
     <div class="user-info credentials">
@@ -11,6 +12,11 @@
         </div>
         <div id="user-birthdate">
             <strong>Birth date: </strong>{{ user_info.birth_date|date:'Y-m-d' }}
+        </div>
+        <div id="user-photo">
+            {% thumbnail user_info.photo "320x400" as im %}
+                    <img src="{{ im.url }}" class="img-thumbnail" alt="Photo">
+            {% endthumbnail %}
         </div>
     </div>
     <div class="user-info contacts">

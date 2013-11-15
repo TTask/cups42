@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
-	<form class="edit-form" method='post' action=''>
+{% load thumbnail %}
+	<form enctype="multipart/form-data" class="edit-form" method="post" action="{% url 'edit' %}">
 		{% csrf_token %}
 		<div class ="right-inputs">
 			<table class="edit-table top-left">
@@ -42,7 +43,9 @@
 				</tr>
 			</table>
 			<div class="edit-table bottom-left">
-				<img id="user-photo-preview" src="http://cdn.bleacherreport.net/images_root/slides/photos/002/260/945/145333504_display_image.jpg?1338130917">
+				{% thumbnail edit_form.instance.photo "320x400" as im %}
+                    <img  id="user-photo-preview"src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" class="img-thumbnail" alt="Photo">
+            	{% endthumbnail %}
 			</div>
 			<div class='edit-table bottom-right'>
 				{{ edit_form.contact_other.label }}<br>
@@ -51,6 +54,13 @@
 				{{ edit_form.bio }}<br>
 			</div>
 		</div>
+		{% for field in edit_form %}
+			{% if field.errors %}
+			<div class="field-error">
+				{{ field.errors }} {{ field.label }}
+			</div>
+			{% endif %}
+		{% endfor %}
 		<input type="submit" value="Save">
 		<a href="{% url 'home' %}">Cancel</a>
 	</form>

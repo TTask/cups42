@@ -1,14 +1,21 @@
 body {
-    width: 80%;
+    width: 50%;
     margin: auto;
 
 }
+.user-profile
+{
+	overflow: auto;
+}
 
-.user-info{
+.user-info {
     display: inline-block;
-    width: 40%;
-    height: 300px;
-    vertical-align: middle;
+    width: 50%;
+    height: 50%;
+}
+
+.contacts {
+	float: right;
 }
 
 .requests-table
@@ -25,25 +32,19 @@ body {
 
 .edit-form
 {
-	width: 60%;
+	width: 100%;
 	margin: auto;
-	margin-top: 3%;
 }
 .edit-table
 {	
-	height: 130px;
 	width: 43%;
 	display: inline-block;
 	margin: auto;
+	height: 200x;
 }
 
-.bottom-left
+#user-photo-preview
 {
+	width: 320px;
 	height: 400px;
-	float: left;
-}
-
-.bottom-right
-{
-	height: 410px;
 }
