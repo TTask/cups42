@@ -68,3 +68,10 @@ class TestEditView(TestCase):
         self.assertTrue(self.user_info.contact_phone in response.content)
         self.assertTrue(str(self.user_info.contact_other) in response.content)
         self.assertTrue(str(self.user_info.bio) in response.content)
+
+    def test_edit_wthout_login(self):
+        self.client.logout()
+        response = self.client.get(reverse('edit'), follow=True)
+        self.assertContains(response, "login-table")
+        self.assertContains(response, "id_username")
+        self.assertContains(response, "id_password")
