@@ -71,7 +71,6 @@ class TestEditView(TestCase):
 
     def test_edit_wthout_login(self):
         self.client.logout()
-<<<<<<< HEAD
         response = self.client.get(reverse('edit'), follow=True)
         self.assertContains(response, "login-table")
         self.assertContains(response, "id_username")
@@ -83,8 +82,7 @@ class TestEditView(TestCase):
         self.client.login(username='admin', password='admin')
         response = self.client.get(reverse('edit'))
         self.assertIn("('#id_birth_date').datepicker", response.content)
-        
-=======
+        self.client.logout()
         response = self.client.get(reverse('edit'))
         self.assertRedirects(response, reverse('login') + '?next=' + reverse('edit'))
 
@@ -108,6 +106,7 @@ class TestEditView(TestCase):
         self.client.logout()
 
     def test_edit_post_validdata(self):
+        #valid data
         self.client.login(username='admin', password='admin')
         response = self.client.post(reverse('edit'), {'name':'test', 'surname':'test', 
             'birth_date': '1990-01-01', 'contact_email': 'test@example.com', 'contact_jabber': 'test@jabber.com', 
@@ -123,4 +122,3 @@ class TestEditView(TestCase):
         self.assertEqual(edit_user.contact_skype, 'example')
         self.assertEqual(edit_user.contact_phone, '123123123')
         self.assertEqual(str(edit_user.bio), 'example bio')
->>>>>>> t5_edit_user_info

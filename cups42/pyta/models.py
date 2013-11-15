@@ -3,7 +3,7 @@ from sorl.thumbnail import ImageField
 
 
 class UserInfo(models.Model):
-<<<<<<< HEAD
+
     photo = ImageField(blank=True, null=True, upload_to="user_media/photo/", verbose_name=u'Photo')
     name = models.CharField(blank=True, max_length=64, null=True, verbose_name=u'Name')
     surname = models.CharField(blank=True, max_length=64, null=True, verbose_name=u'Surname')
@@ -14,7 +14,7 @@ class UserInfo(models.Model):
     contact_skype = models.CharField(blank=True, max_length=128, null=True, verbose_name=u'Skype')
     contact_jabber = models.EmailField(blank=True, max_length=128, null=True, verbose_name=u'Jabber')
     contact_other = models.TextField(blank=True, null=True, verbose_name='Other contacts')
-=======
+
     photo = ImageField(blank=True, upload_to="user_media/photo/", verbose_name=u'Photo')
     name = models.CharField(max_length=64, null=True, verbose_name=u'Name')
     surname = models.CharField(max_length=64, null=True, verbose_name=u'Surname')
@@ -25,7 +25,6 @@ class UserInfo(models.Model):
     contact_skype = models.CharField(max_length=128, null=True, verbose_name=u'Skype')
     contact_jabber = models.EmailField(max_length=128, null=True, verbose_name=u'Jabber')
     contact_other = models.TextField(null=True, verbose_name='Other contacts')
->>>>>>> t5_edit_user_info
 
 
 class RequestHistoryEntry(models.Model):
