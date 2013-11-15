@@ -5,7 +5,7 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from models import UserInfo
 from models import RequestHistoryEntry
-from forms import EditUserInfoForm
+from pyta.forms import EditUserInfoForm
 from django.contrib.auth.decorators import login_required
 
 def home_view(request):
