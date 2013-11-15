@@ -1,5 +1,4 @@
 
-<<<<<<< HEAD
 	$(document).ready( function() {
 		function beforeEditSubmit() {
 			$(".edit-form").find("input, textarea").attr('disabled', true);
@@ -18,5 +17,3 @@
 			success: afterEditSubmit
 			}); 
 });
-=======
->>>>>>> t5_edit_user_info
