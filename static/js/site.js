@@ -14,6 +14,6 @@
 		$(".edit-form").ajaxForm({
 
 			beforeSubmit: beforeEditSubmit,
-			success: afterEditSubmit
+			success: afterEditSubmit,
 			}); 
 });

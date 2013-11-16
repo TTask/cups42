@@ -7,6 +7,9 @@ from models import UserInfo
 from models import RequestHistoryEntry
 from pyta.forms import EditUserInfoForm
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+import json
+
 
 def home_view(request):
     user_info = UserInfo.objects.get_or_create(pk=1)[0]
@@ -35,3 +38,29 @@ def edit_view(request):
 		edit_form = EditUserInfoForm(instance=user_info)
 		return render_to_response('edit.html', {'edit_form' : edit_form}, 
 			context_instance=RequestContext(request))
+
+
+@login_required()
+def edit_view_ajax(request):
+	if request.method == 'POST' and request.is_ajax():
+		curr_user = UserInfo.objects.get_or_create(pk=1)[0]
+		form = EditUserInfoForm(request.POST, request.FILES, instance=curr_user)
+		print(request.POST)
+		if form.is_valid():
+			form.save()
+			response_data = {}
+			response_data['result'] = 'success'
+			response_data['message'] = 'Successfuly saved.'
+			return HttpResponse(json.dumps(response_data), content_type="application/json", 
+				context_instance=RequestContext(request))
+		else:
+			response_data = {}
+			for key, val in form.errors:
+				response_data[key] = val
+			return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+	else:
+		return HttpResponse("Ajax only submiting", content_type="text/plain")
+		
+
+
