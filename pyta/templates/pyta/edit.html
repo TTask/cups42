@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+{% load thumbnail %}
+	<form enctype="multipart/form-data" class="edit-form" method="post" action="{% url 'edit' %}">
+		{% csrf_token %}
+		<div class ="right-inputs">
+			<table class="edit-table top-left">
+				<tr>
+					<td>{{ edit_form.name.label }}</td>
+					<td>{{ edit_form.name }}</td>
+				</tr>
+				<tr>
+					<td>{{ edit_form.surname.label }}</td>
+					<td>{{ edit_form.surname }}</td>
+				</tr>
+				<tr>
+					<td>{{ edit_form.birth_date.label }}</td>
+					<td>{{ edit_form.birth_date }}</td>
+				</tr>
+				<tr>
+					<td>{{ edit_form.photo.label }}</td>
+					<td>{{ edit_form.photo }}</td>
+				</tr>
+			</table>
+
+			
+			<table class="edit-table top-right">
+				<tr>
+					<td>{{ edit_form.contact_email.label }}</td>
+					<td>{{ edit_form.contact_email }}</td>
+				</tr>
+				<tr>
+					<td>{{ edit_form.contact_jabber.label }}</td>
+					<td>{{ edit_form.contact_jabber }}</td>
+				</tr>
+				<tr>
+					<td>{{ edit_form.contact_skype.label }}</td>
+					<td>{{ edit_form.contact_skype }}</td>
+				</tr>
+				<tr>
+					<td>{{ edit_form.contact_phone.label }}</td>
+					<td>{{ edit_form.contact_phone }}</td>
+				</tr>
+			</table>
+			<div class="edit-table bottom-left">
+				{% thumbnail edit_form.instance.photo "320x400" as im %}
+                    <img  id="user-photo-preview"src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" class="img-thumbnail" alt="Photo">
+            	{% endthumbnail %}
+			</div>
+			<div class='edit-table bottom-right'>
+				{{ edit_form.contact_other.label }}<br>
+				{{ edit_form.contact_other }}<br>
+				{{ edit_form.bio.label }}<br>
+				{{ edit_form.bio }}<br>
+			</div>
+		</div>
+		{% for field in edit_form %}
+			{% if field.errors %}
+			<div class="field-error">
+				{{ field.label }} {{ field.errors }} 
+			</div>
+			{% endif %}
+		{% endfor %}
+		<img id="progress-gif" src="{% static 'images/loading.gif' %}" style="display: none">
+		<input type="submit" value="Save">
+		<a href="{% url 'home' %}">Cancel</a>
+	</form>
+{% endblock %}
