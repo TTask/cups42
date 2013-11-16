@@ -39,7 +39,7 @@ class TestRequestHistoryView(TestCase):
 
     def test_history_page(self):
         requests_limit = 10
-        request_path_done = []          #this is requests done by test
+        request_path_done = [] #this is requests done by test
         request_paths = [reverse('home'), reverse('requests')]
         while requests_limit > 0:
             request = random.choice(request_paths)
@@ -90,9 +90,15 @@ class TestEditView(TestCase):
         self.client.login(username='admin', password='admin')
 
         #not valid data
+<<<<<<< HEAD:pyta/tests.py
         response = self.client.post(reverse('edit'), {'name':'test', 'surname':'test', 
             'birth_date': '100', 'contact_email': 'test@example.com', 'contact_jabber': 'test@jabber.com', 
             'contact_skype' :'example', 'contact_phone' :'123123123', 'contact_other' :'aexample icq', 
+=======
+        response = self.client.post(reverse('edit'), {'name':'test', 'surname':'test',
+            'birth_date': '100', 'contact_email': 'test@example.com', 'contact_jabber': 'test@jabber.com',
+            'contact_skype' :'example', 'contact_phone' :'123123123', 'contact_other' :'aexample icq',
+>>>>>>> self_fix_errors_with_tests:cups42/pyta/tests.py
             'bio' : 'example bio'})
         user = UserInfo.objects.get(pk=1)
         self.assertNotEqual(user.name, 'test')
@@ -108,9 +114,15 @@ class TestEditView(TestCase):
     def test_edit_post_validdata(self):
         #valid data
         self.client.login(username='admin', password='admin')
+<<<<<<< HEAD:pyta/tests.py
         response = self.client.post(reverse('edit'), {'name':'test', 'surname':'test', 
             'birth_date': '1990-01-01', 'contact_email': 'test@example.com', 'contact_jabber': 'test@jabber.com', 
             'contact_skype' :'example', 'contact_phone' :'123123123', 'contact_other' :'aexample icq', 
+=======
+        response = self.client.post(reverse('edit'), {'name':'test', 'surname':'test',
+            'birth_date': '1990-01-01', 'contact_email': 'test@example.com', 'contact_jabber': 'test@jabber.com',
+            'contact_skype' :'example', 'contact_phone' :'123123123', 'contact_other' :'aexample icq',
+>>>>>>> self_fix_errors_with_tests:cups42/pyta/tests.py
             'bio' : 'example bio'})
         edit_user = UserInfo.objects.get(pk=1)
         self.assertEqual(response.content, '')
