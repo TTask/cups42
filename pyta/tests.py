@@ -8,8 +8,10 @@ from models import RequestHistoryEntry
 import views
 from django.core.urlresolvers import reverse
 import random
-import re
 from BeautifulSoup import BeautifulSoup
+import os
+import sys
+import subprocess
 
 
 class TestIndexView(TestCase):
@@ -195,3 +197,6 @@ class TestAdminLinkTag(TestCase):
     def test_link_displayng(self):
         response = self.client.get(reverse('home'))
         self.assertIn(self.rendered.strip().split()[0], response.content)
+
+
+        
