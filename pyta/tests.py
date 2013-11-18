@@ -84,7 +84,6 @@ class TestEditView(TestCase):
 
     def test_edit_post_invaliddata(self):
         self.client.login(username='admin', password='admin')
-
         #not valid data
         response = self.client.post(reverse('edit'), {'name':'test', 'surname':'test', 
             'birth_date': '100', 'contact_email': '', 'contact_jabber': 'test@jabber.com', 
@@ -92,6 +91,11 @@ class TestEditView(TestCase):
             'bio' : 'example bio'})
         self.assertIn('Enter a valid date.', response.content)
         self.assertIn('This field is required.', response.content)
+        #errors are on page?
+        sp = BeautifulSoup(response.content)
+        error_list = sp.findAll('ul', {'class': 'errorlist'})
+        self.assertIn('Enter a valid date.', error_list[0].getText())
+        self.assertIn('This field is required.', error_list[1].getText())
         #user not changed
         user = UserInfo.objects.get(pk=1)
         self.assertNotEqual(user.name, 'test')
