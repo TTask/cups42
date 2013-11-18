@@ -8,7 +8,6 @@ from models import RequestHistoryEntry
 import views
 from django.core.urlresolvers import reverse
 import random
-import re
 from BeautifulSoup import BeautifulSoup
 import os
 import sys
