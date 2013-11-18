@@ -113,7 +113,6 @@ class TestEditView(TestCase):
             'contact_skype' :'example', 'contact_phone' :'123123123', 'contact_other' :'aexample icq', 
             'bio' : 'example bio'})
         edit_user = UserInfo.objects.get(pk=1)
-        self.assertEqual(response.content, '')
         self.assertEqual(edit_user.name, 'test')
         self.assertEqual(edit_user.surname, 'test')
         self.assertEqual(str(edit_user.birth_date), '1990-01-01')
