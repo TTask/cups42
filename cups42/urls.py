@@ -3,7 +3,9 @@ from django.conf import settings
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 
+
 admin.autodiscover()
+
 
 urlpatterns = patterns('',
     url(r'^$', 'pyta.views.home_view', name='home'),

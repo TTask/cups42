@@ -1,4 +1,8 @@
 from django.test import TestCase
+from django.template import Context
+from django.template import Template
+from django import template
+from templatetags import pyta_extras
 from models import UserInfo
 from models import RequestHistoryEntry
 import views
@@ -158,3 +162,27 @@ class TestEditView(TestCase):
         self.assertNotEqual(userinfo.contact_skype, 'example')
         self.assertNotEqual(userinfo.contact_phone, '123123123')
         self.assertNotEqual(str(userinfo.bio), 'example bio')
+
+
+class TestAdminLinkTag(TestCase):
+    def setUp(self):
+        self.user_model = UserInfo.objects.get(pk=1)
+        self.client.get(reverse('home'))
+        self.history_entry = RequestHistoryEntry.objects.get(pk=1)
+        self.context = Context({'user_info': self.user_model, 'history_entry' : self.history_entry})
+        self.not_rendered = Template(
+            '''{% load pyta_extras %}
+            {% get_admin_link user_info %}
+            {% get_admin_link history_entry %}''')
+        self.rendered = self.not_rendered.render(self.context)
+
+    def test_link_rendering(self):
+        self.assertIn( '/pyta/userinfo/1/', self.rendered)
+        self.assertIn('/pyta/requesthistoryentry/1/', self.rendered)
+        self.assertEqual('', self.not_rendered.render(Context()).strip())
+        self.assertEqual('', self.not_rendered.render(Context({"user_info" : 1})).strip())
+        
+
+    def test_link_displayng(self):
+        response = self.client.get(reverse('home'))
+        self.assertIn(self.rendered.strip().split()[0], response.content)
