@@ -1,6 +1,18 @@
 
 	$(document).ready( function() {
 
+		function clearFileInput()
+			{
+    			var oldInput = document.getElementById("id_photo");
+    			var newInput = document.createElement("input");
+    			newInput.type = "file";
+    			newInput.id = oldInput.id;
+    			newInput.name = oldInput.name;
+    			newInput.className = oldInput.className;
+    			newInput.style.cssText = oldInput.style.cssText;
+    
+    			oldInput.parentNode.replaceChild(newInput, oldInput);
+			};
 
 		function showResult(responseText){
 			var $resultField = $("#result");
@@ -8,11 +20,10 @@
 			$resultField.append(responseText['request_result']);
 			if (responseText['request_result'] == 'Error occurred') {
 				for(var key in responseText){
-					$('input[name=' + key + ']').addClass('error-input').val(responseText[key]).focus();
+					$('input[name=' + key + ']').addClass('error-input').attr('placeholder', (responseText[key])).val("").focus();
 				};
 			};
 		};
-
 
 		function beforeEditSubmit() {
 			$(".edit-form").find("input, textarea").attr('disabled', true);
@@ -28,13 +39,16 @@
 			setTimeout( function() {
 				$(".edit-form").find("input, textarea").attr('disabled', false);
 			}, 1000);
-			showResult(responseText)
+			showResult(responseText);
+			clearFileInput();
 		};
 
 		
 		function result(responseText, statusText, xhr, $form){
 			alert(responseText['birth_date']);
 		};
+
+
 		$(".edit-form").ajaxForm({
 
 			beforeSubmit: beforeEditSubmit,
