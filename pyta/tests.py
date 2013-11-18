@@ -121,12 +121,23 @@ class TestEditView(TestCase):
 
     def test_edit_ajax_validdata(self):
         self.client.login(username='admin', password='admin')
+
         response = self.client.post(reverse('edit_ajax'), {'name':'test', 'surname':'test', 
             'birth_date': '1990-01-01', 'contact_email': 'test@example.com', 'contact_jabber': 'test@jabber.com', 
             'contact_skype' :'example', 'contact_phone' :'123123123', 'contact_other' :'example icq', 
             'bio' : 'example bio'}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertIn('request_result', response.content)
         self.assertIn('Successfuly saved.', response.content)
+        userinfo = UserInfo.objects.get(pk=1)
+        #user changed
+        self.assertEqual(userinfo.name, u'test')
+        self.assertEqual(userinfo.surname, 'test')
+        self.assertEqual(str(userinfo.birth_date), '1990-01-01')
+        self.assertEqual(userinfo.contact_email, 'test@example.com')
+        self.assertEqual(userinfo.contact_jabber, 'test@jabber.com')
+        self.assertEqual(userinfo.contact_skype, 'example')
+        self.assertEqual(userinfo.contact_phone, '123123123')
+        self.assertEqual(str(userinfo.bio), 'example bio')
 
 
     def test_edit_ajax_invaliddata(self):
@@ -137,3 +148,13 @@ class TestEditView(TestCase):
             'bio' : 'example bio'}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertIn('request_result', response.content)
         self.assertIn('Error', response.content)
+        userinfo = UserInfo.objects.get(pk=1)
+        #user not changed
+        self.assertNotEqual(userinfo.name, u'test')
+        self.assertNotEqual(userinfo.surname, 'test')
+        self.assertNotEqual(str(userinfo.birth_date), '1990-01-01')
+        self.assertNotEqual(userinfo.contact_email, 'test@example.com')
+        self.assertNotEqual(userinfo.contact_jabber, 'test@jabber.com')
+        self.assertNotEqual(userinfo.contact_skype, 'example')
+        self.assertNotEqual(userinfo.contact_phone, '123123123')
+        self.assertNotEqual(str(userinfo.bio), 'example bio')
