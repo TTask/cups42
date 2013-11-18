@@ -87,9 +87,12 @@ class TestEditView(TestCase):
 
         #not valid data
         response = self.client.post(reverse('edit'), {'name':'test', 'surname':'test', 
-            'birth_date': '100', 'contact_email': 'test@example.com', 'contact_jabber': 'test@jabber.com', 
+            'birth_date': '100', 'contact_email': '', 'contact_jabber': 'test@jabber.com', 
             'contact_skype' :'example', 'contact_phone' :'123123123', 'contact_other' :'aexample icq', 
             'bio' : 'example bio'})
+        self.assertIn('Enter a valid date.', response.content)
+        self.assertIn('This field is required.', response.content)
+        #user not changed
         user = UserInfo.objects.get(pk=1)
         self.assertNotEqual(user.name, 'test')
         self.assertNotEqual(user.surname, 'test')
@@ -109,6 +112,7 @@ class TestEditView(TestCase):
             'contact_skype' :'example', 'contact_phone' :'123123123', 'contact_other' :'aexample icq', 
             'bio' : 'example bio'})
         edit_user = UserInfo.objects.get(pk=1)
+        #user changed
         self.assertEqual(edit_user.name, 'test')
         self.assertEqual(edit_user.surname, 'test')
         self.assertEqual(str(edit_user.birth_date), '1990-01-01')
@@ -148,6 +152,7 @@ class TestEditView(TestCase):
             'bio' : 'example bio'}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertIn('request_result', response.content)
         self.assertIn('Error', response.content)
+        self.assertIn
         userinfo = UserInfo.objects.get(pk=1)
         #user not changed
         self.assertNotEqual(userinfo.name, u'test')
