@@ -71,20 +71,16 @@ class TestEditView(TestCase):
 
     def test_edit_wthout_login(self):
         self.client.logout()
-        response = self.client.get(reverse('edit'), follow=True)
-        self.assertContains(response, "login-table")
-        self.assertContains(response, "id_username")
-        self.assertContains(response, "id_password")
-
+        response = self.client.get(reverse('edit'))
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('login') + '?next=' + reverse('edit'))
 
 
     def test_edit_custom_widget(self):
         self.client.login(username='admin', password='admin')
         response = self.client.get(reverse('edit'))
         self.assertIn("('#id_birth_date').datepicker", response.content)
-        self.client.logout()
-        response = self.client.get(reverse('edit'))
-        self.assertRedirects(response, reverse('login') + '?next=' + reverse('edit'))
+
 
     def test_edit_post_invaliddata(self):
         self.client.login(username='admin', password='admin')
@@ -121,3 +117,23 @@ class TestEditView(TestCase):
         self.assertEqual(edit_user.contact_skype, 'example')
         self.assertEqual(edit_user.contact_phone, '123123123')
         self.assertEqual(str(edit_user.bio), 'example bio')
+        self.client.logout()
+
+    def test_edit_ajax_validdata(self):
+        self.client.login(username='admin', password='admin')
+        response = self.client.post(reverse('edit_ajax'), {'name':'test', 'surname':'test', 
+            'birth_date': '1990-01-01', 'contact_email': 'test@example.com', 'contact_jabber': 'test@jabber.com', 
+            'contact_skype' :'example', 'contact_phone' :'123123123', 'contact_other' :'example icq', 
+            'bio' : 'example bio'}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertIn('request_result', response.content)
+        self.assertIn('Successfuly saved.', response.content)
+
+
+    def test_edit_ajax_invaliddata(self):
+        self.client.login(username='admin', password='admin')
+        response = self.client.post(reverse('edit_ajax'), {'name':'test', 'surname':'test', 
+            'birth_date': '1111', 'contact_email': 'test@example.com', 'contact_jabber': 'test@jabber.com', 
+            'contact_skype' :'example', 'contact_phone' :'123123123', 'contact_other' :'example icq', 
+            'bio' : 'example bio'}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertIn('request_result', response.content)
+        self.assertIn('Error', response.content)

@@ -48,3 +48,10 @@ body {
 	width: 320px;
 	height: 400px;
 }
+
+.error-input
+{
+	border: 2px solid red;
+	border-radius: 3px;
+	color: #c0392b;
+}

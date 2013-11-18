@@ -62,6 +62,8 @@
 			</div>
 			{% endif %}
 		{% endfor %}
+		<div id='result'>
+		</div>
 		<img id="progress-gif" src="{% static 'images/loading.gif' %}" style="display: none">
 		<input type="submit" value="Save">
 		<a href="{% url 'home' %}">Cancel</a>

@@ -8,6 +8,8 @@ from models import RequestHistoryEntry
 from pyta.forms import EditUserInfoForm
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+import json
+
 
 def home_view(request):
     user_info = UserInfo.objects.get_or_create(pk=1)[0]
@@ -46,13 +48,11 @@ def edit_view_ajax(request):
 		edit_form = EditUserInfoForm(request.POST, request.FILES, instance=user_info)
 		if edit_form.is_valid():
 			edit_form.save()
-			response['result']  = 'Successfuly saved.'
-			return HttpResponse(json.dumps(response), content_type='application/json', 
-				context_instance=RequestContext(request))
+			response['request_result']  = 'Successfuly saved.'
+			return HttpResponse(json.dumps(response), content_type='application/json')
 		else:
-			response = dict([field, error] for field, error in edit_form.errors)
-			return HttpResponse(json.dumps(response), content_type='application/json', 
-				context_instance=RequestContext(request))
-
+			response = dict([field, error] for field, error in edit_form.errors.items())
+			response['request_result'] = 'Error occurred'
+			return HttpResponse(json.dumps(response), content_type='application/json')
 	else: 
 		return edit_view(request)
