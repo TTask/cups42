@@ -10,6 +10,9 @@ from django.core.urlresolvers import reverse
 import random
 import re
 from BeautifulSoup import BeautifulSoup
+import os
+import sys
+import subprocess
 
 
 class TestIndexView(TestCase):
@@ -195,3 +198,15 @@ class TestAdminLinkTag(TestCase):
     def test_link_displayng(self):
         response = self.client.get(reverse('home'))
         self.assertIn(self.rendered.strip().split()[0], response.content)
+
+
+class TestModelDisplaying(TestCase):
+    def setUp(self):
+        pass
+
+    def test_displaing(self):
+        result = subprocess.Popen(['python manage.py appmodels pyta '], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result_stdout = result.stdout.read()
+        result_stderr = result.stderr.read()
+        self.assertEqual(len(result_stdout.splitlines()), len(result_stderr.splitlines()))
+
