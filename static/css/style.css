@@ -3,6 +3,10 @@ body {
     margin: auto;
 
 }
+.useredit-menu
+{
+	float: right;
+}
 .user-profile
 {
 	overflow: auto;
