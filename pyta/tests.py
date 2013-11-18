@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.template import Context
 from django.template import Template
+from django.db.models import get_app
+from django.db.models import get_models
 from django import template
 from templatetags import pyta_extras
 from models import UserInfo
@@ -12,6 +14,8 @@ from BeautifulSoup import BeautifulSoup
 import os
 import sys
 import subprocess
+import datetime
+
 
 
 class TestIndexView(TestCase):
@@ -201,11 +205,46 @@ class TestAdminLinkTag(TestCase):
 
 class TestModelDisplaying(TestCase):
     def setUp(self):
-        pass
+        self.app = 'pyta'
+        self.in_app = get_app(self.app)
+        self.not_exists_app = 'i_am_app'
+        self.models = get_models(self.in_app)
 
     def test_displaing(self):
-        result = subprocess.Popen(['python manage.py appmodels pyta '], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result = subprocess.Popen(['python manage.py appmodels %s' % self.app], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         result_stdout = result.stdout.read()
         result_stderr = result.stderr.read()
-        self.assertEqual(len(result_stdout.splitlines()), len(result_stderr.splitlines()))
+        models = get_models(self.in_app)
 
+        self.assertEqual(len(result_stdout.splitlines()), len(result_stderr.splitlines()))
+        for model in self.models:
+            self.assertIn(model.__name__, result_stdout)
+            self.assertIn("error:\tMODEL " + model.__name__, result_stderr)
+
+    def test_invalid_app_name(self):
+        result = subprocess.Popen(['python manage.py appmodels %s' % self.not_exists_app], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result_err = result.stderr.read()
+        self.assertIn('could not be found', result_err)
+
+    def test_invalid_args(self):
+        result = subprocess.Popen(['python manage.py appmodels'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result_err = result.stderr.read()
+        self.assertIn('needs 1 argument', result_err)
+
+class TestShellScript(TestCase):
+    def setUp(self):
+        self.app = 'pyta'
+        self.in_app = get_app(self.app)
+        self.script_name = 'appmodels'
+
+    def test_created_file(self):
+        result = subprocess.Popen(['bash %s' % self.script_name], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result_stderr = result.stderr.read()
+        result_stdout = result.stdout.read()
+        filename = str(datetime.date.today().strftime('%Y%m%d')) + '.dat'
+        data = open(filename,'r').read()
+        self.assertEqual(0, len(result_stderr.splitlines()))
+        #duplicated and written to file?
+        self.assertEqual(len(result_stdout.splitlines()), len(data.splitlines()))
+        os.remove(filename)
+        
