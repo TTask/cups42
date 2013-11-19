@@ -27,8 +27,9 @@ class UserInfo(models.Model):
     def __unicode__(self):
         return unicode("%s %s" % (self.name,
                                   self.surname))
+
     def repr(self):
-      return "%s %s" % (self.name, self.surname)
+        return "%s %s" % (self.name, self.surname)
 
 
 class RequestHistoryEntry(models.Model):
@@ -37,12 +38,12 @@ class RequestHistoryEntry(models.Model):
     request_time = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
-      return unicode("%s %s" % (
-        self.request_path,
-        self.request_method))
+        return unicode("%s %s" % (
+            self.request_path,
+            self.request_method))
 
     def repr(self):
-      return "%s %s" % (self.request_path, self.request_method)
+        return "%s %s" % (self.request_path, self.request_method)
 
 
 class ModelHistoryEntry(models.Model):
@@ -54,4 +55,4 @@ class ModelHistoryEntry(models.Model):
         return unicode("%s has %s" % (self.model_name, self.change_type))
 
     def repr(self):
-      return "%s %s" % (self.model_name, self.change_type)
+        return "%s %s" % (self.model_name, self.change_type)
