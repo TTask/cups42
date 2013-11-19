@@ -14,8 +14,9 @@ import datetime
 
 
 class TestIndexView(TestCase):
+    fixtures = ['db_data.json']
+
     def setUp(self):
-        fixtures = ['initial_data.json']
         self.user = UserInfo.objects.get(pk=1)
 
     def test_index_view(self):
@@ -59,8 +60,9 @@ class TestRequestHistoryView(TestCase):
 
 
 class TestEditView(TestCase):
+    fixtures = ['db_data.json']
+
     def setUp(self):
-        fixtures = ['initial_data.json']
         self.user_info = UserInfo.objects.get(pk=1)
 
     def test_form_on_page(self):
@@ -200,6 +202,8 @@ class TestEditView(TestCase):
 
 
 class TestAdminLinkTag(TestCase):
+    fixtures = ['db_data.json']
+
     def setUp(self):
         self.user_model = UserInfo.objects.get(pk=1)
         self.client.get(reverse('home'))
@@ -227,6 +231,8 @@ class TestAdminLinkTag(TestCase):
 
 
 class TestModelDisplaying(TestCase):
+    fixtures = ['db_data.json']
+
     def setUp(self):
         self.app = 'pyta'
         self.in_app = get_app(self.app)
