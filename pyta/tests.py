@@ -1,25 +1,21 @@
+from django import template
 from django.test import TestCase
 from django.template import Context
 from django.template import Template
 from django.db.models import get_app
 from django.db.models import get_models
-from django import template
-from templatetags import pyta_extras
+from django.core.urlresolvers import reverse
 from models import UserInfo
 from models import RequestHistoryEntry
-import views
-from django.core.urlresolvers import reverse
-import random
+from templatetags import pyta_extras
 from BeautifulSoup import BeautifulSoup
+import random
 import os
-import sys
 import subprocess
 import datetime
 
 
-
 class TestIndexView(TestCase):
-    
     def setUp(self):
         fixtures = ['initial_data.json']
         self.user = UserInfo.objects.get(pk=1)
@@ -49,17 +45,20 @@ class TestRequestHistoryView(TestCase):
 
     def test_history_page(self):
         requests_limit = 10
-        request_path_done = []          #this is requests done by test
+        #this is requests done by test
+        request_path_done = []
         request_paths = [reverse('home'), reverse('requests')]
         while requests_limit > 0:
             request = random.choice(request_paths)
             request_path_done.append(request)
-            requests_limit-=1
+            requests_limit -= 1
             self.client.get(request)
         response = self.client.get(reverse('requests'))
         sp = BeautifulSoup(response.content)
-        requests_table_onpage = [elem.getText() for elem in sp.findAll('td', {'class': 'request-path'})]
+        requests_table_onpage = [elem.getText() for elem in sp.findAll
+                                 ('td', {'class': 'request-path'})]
         self.assertEqual(request_path_done, requests_table_onpage)
+
 
 class TestEditView(TestCase):
     def setUp(self):
@@ -83,22 +82,27 @@ class TestEditView(TestCase):
         self.client.logout()
         response = self.client.get(reverse('edit'))
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('login') + '?next=' + reverse('edit'))
-
+        self.assertRedirects(response,
+                             reverse('login') + '?next=' + reverse('edit'))
 
     def test_edit_custom_widget(self):
         self.client.login(username='admin', password='admin')
         response = self.client.get(reverse('edit'))
         self.assertIn("('#id_birth_date').datepicker", response.content)
 
-
     def test_edit_post_invaliddata(self):
         self.client.login(username='admin', password='admin')
         #not valid data
-        response = self.client.post(reverse('edit'), {'name':'test', 'surname':'test', 
-            'birth_date': '100', 'contact_email': '', 'contact_jabber': 'test@jabber.com', 
-            'contact_skype' :'example', 'contact_phone' :'123123123', 'contact_other' :'aexample icq', 
-            'bio' : 'example bio'})
+        response = self.client.post(reverse('edit'),
+                                    {'name': 'test',
+                                     'surname': 'test',
+                                     'birth_date': '100',
+                                     'contact_email': '',
+                                     'contact_jabber': 'test@jabber.com',
+                                     'contact_skype': 'example',
+                                     'contact_phone': '123123123',
+                                     'contact_other': 'aexample icq',
+                                     'bio': 'example bio'})
         self.assertIn('Enter a valid date.', response.content)
         self.assertIn('This field is required.', response.content)
         #errors are on page?
@@ -121,10 +125,16 @@ class TestEditView(TestCase):
     def test_edit_post_validdata(self):
         #valid data
         self.client.login(username='admin', password='admin')
-        response = self.client.post(reverse('edit'), {'name':'test', 'surname':'test', 
-            'birth_date': '1990-01-01', 'contact_email': 'test@example.com', 'contact_jabber': 'test@jabber.com', 
-            'contact_skype' :'example', 'contact_phone' :'123123123', 'contact_other' :'aexample icq', 
-            'bio' : 'example bio'})
+        response = self.client.post(reverse('edit'),
+                                    {'name': 'test',
+                                     'surname': 'test',
+                                     'birth_date': '1990-01-01',
+                                     'contact_email': 'test@example.com',
+                                     'contact_jabber': 'test@jabber.com',
+                                     'contact_skype': 'example',
+                                     'contact_phone': '123123123',
+                                     'contact_other': 'aexample icq',
+                                     'bio': 'example bio'})
         edit_user = UserInfo.objects.get(pk=1)
         #user changed
         self.assertEqual(edit_user.name, 'test')
@@ -139,11 +149,17 @@ class TestEditView(TestCase):
 
     def test_edit_ajax_validdata(self):
         self.client.login(username='admin', password='admin')
-
-        response = self.client.post(reverse('edit_ajax'), {'name':'test', 'surname':'test', 
-            'birth_date': '1990-01-01', 'contact_email': 'test@example.com', 'contact_jabber': 'test@jabber.com', 
-            'contact_skype' :'example', 'contact_phone' :'123123123', 'contact_other' :'example icq', 
-            'bio' : 'example bio'}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        response = self.client.post(reverse('edit_ajax'),
+                                    {'name': 'test',
+                                     'surname': 'test',
+                                     'birth_date': '1990-01-01',
+                                     'contact_email': 'test@example.com',
+                                     'contact_jabber': 'test@jabber.com',
+                                     'contact_skype': 'example',
+                                     'contact_phone': '123123123',
+                                     'contact_other': 'example icq',
+                                     'bio': 'example bio'},
+                                    HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertIn('request_result', response.content)
         self.assertIn('Successfuly saved.', response.content)
         userinfo = UserInfo.objects.get(pk=1)
@@ -157,13 +173,19 @@ class TestEditView(TestCase):
         self.assertEqual(userinfo.contact_phone, '123123123')
         self.assertEqual(str(userinfo.bio), 'example bio')
 
-
     def test_edit_ajax_invaliddata(self):
         self.client.login(username='admin', password='admin')
-        response = self.client.post(reverse('edit_ajax'), {'name':'test', 'surname':'test', 
-            'birth_date': '1111', 'contact_email': 'test@example.com', 'contact_jabber': 'test@jabber.com', 
-            'contact_skype' :'example', 'contact_phone' :'123123123', 'contact_other' :'example icq', 
-            'bio' : 'example bio'}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        response = self.client.post(reverse('edit_ajax'),
+                                    {'name': 'test',
+                                     'surname': 'test',
+                                     'birth_date': '1111',
+                                     'contact_email': 'test@example.com',
+                                     'contact_jabber': 'test@jabber.com',
+                                     'contact_skype': 'example',
+                                     'contact_phone': '123123123',
+                                     'contact_other': 'example icq',
+                                     'bio': 'example bio'},
+                                    HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertIn('request_result', response.content)
         self.assertIn('Error', response.content)
         self.assertIn
@@ -184,7 +206,8 @@ class TestAdminLinkTag(TestCase):
         self.user_model = UserInfo.objects.get(pk=1)
         self.client.get(reverse('home'))
         self.history_entry = RequestHistoryEntry.objects.get(pk=1)
-        self.context = Context({'user_info': self.user_model, 'history_entry' : self.history_entry})
+        self.context = Context({'user_info': self.user_model,
+                                'history_entry': self.history_entry})
         self.not_rendered = Template(
             '''{% load pyta_extras %}
             {% get_admin_link user_info %}
@@ -192,11 +215,13 @@ class TestAdminLinkTag(TestCase):
         self.rendered = self.not_rendered.render(self.context)
 
     def test_link_rendering(self):
-        self.assertIn( '/pyta/userinfo/1/', self.rendered)
+        self.assertIn('/pyta/userinfo/1/', self.rendered)
         self.assertIn('/pyta/requesthistoryentry/1/', self.rendered)
         self.assertEqual('', self.not_rendered.render(Context()).strip())
-        self.assertEqual('', self.not_rendered.render(Context({"user_info" : 1})).strip())
-        
+        self.assertEqual('',
+                         self.not_rendered.render(
+                             Context({"user_info": 1})).strip()
+                         )
 
     def test_link_displayng(self):
         response = self.client.get(reverse('home'))
@@ -211,25 +236,33 @@ class TestModelDisplaying(TestCase):
         self.models = get_models(self.in_app)
 
     def test_displaing(self):
-        result = subprocess.Popen(['python manage.py appmodels %s' % self.app], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result = subprocess.Popen(['python manage.py appmodels %s' % self.app],
+                                  shell=True, stdout=subprocess.PIPE,
+                                  stderr=subprocess.PIPE)
         result_stdout = result.stdout.read()
         result_stderr = result.stderr.read()
-        models = get_models(self.in_app)
-
-        self.assertEqual(len(result_stdout.splitlines()), len(result_stderr.splitlines()))
+        self.assertEqual(len(result_stdout.splitlines()),
+                         len(result_stderr.splitlines()))
         for model in self.models:
             self.assertIn(model.__name__, result_stdout)
             self.assertIn("error:\tMODEL " + model.__name__, result_stderr)
 
     def test_invalid_app_name(self):
-        result = subprocess.Popen(['python manage.py appmodels %s' % self.not_exists_app], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result = subprocess.Popen(['python manage.py appmodels %s' %
+                                  self.not_exists_app],
+                                  shell=True, stdout=subprocess.PIPE,
+                                  stderr=subprocess.PIPE)
         result_err = result.stderr.read()
         self.assertIn('could not be found', result_err)
 
     def test_invalid_args(self):
-        result = subprocess.Popen(['python manage.py appmodels'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result = subprocess.Popen(['python manage.py appmodels'],
+                                  shell=True,
+                                  stdout=subprocess.PIPE,
+                                  stderr=subprocess.PIPE)
         result_err = result.stderr.read()
         self.assertIn('needs 1 argument', result_err)
+
 
 class TestShellScript(TestCase):
     def setUp(self):
@@ -238,13 +271,16 @@ class TestShellScript(TestCase):
         self.script_name = 'appmodels'
 
     def test_created_file(self):
-        result = subprocess.Popen(['bash %s' % self.script_name], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result = subprocess.Popen(['bash %s' % self.script_name],
+                                  shell=True,
+                                  stdout=subprocess.PIPE,
+                                  stderr=subprocess.PIPE)
         result_stderr = result.stderr.read()
         result_stdout = result.stdout.read()
         filename = str(datetime.date.today().strftime('%Y%m%d')) + '.dat'
-        data = open(filename,'r').read()
+        data = open(filename, 'r').read()
         self.assertEqual(0, len(result_stderr.splitlines()))
         #duplicated and written to file?
-        self.assertEqual(len(result_stdout.splitlines()), len(data.splitlines()))
+        self.assertEqual(
+            len(result_stdout.splitlines()), len(data.splitlines()))
         os.remove(filename)
-        
