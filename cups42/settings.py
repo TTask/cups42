@@ -4,14 +4,11 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cups42.settings")
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = 'v1%#$8(d!6o)o1q8yk1e3v=+*q*!)qzf09=n0zy&f3ihv647q%'
-SOUTH_TESTS_MIGRATE = False
-
 
 DEBUG = True
 TEMPLATE_DEBUG = True
 THUMBNAIL_DEBUG = True
 ALLOWED_HOSTS = []
-
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -83,6 +80,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.pyta'),
+        'TEST_NAME' : os.path.join(BASE_DIR, 'db.pyta'),
     }
 }
 
