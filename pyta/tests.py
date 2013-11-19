@@ -269,28 +269,6 @@ class TestModelDisplaying(TestCase):
         self.assertIn('needs 1 argument', result_err)
 
 
-class TestShellScript(TestCase):
-    def setUp(self):
-        self.app = 'pyta'
-        self.in_app = get_app(self.app)
-        self.script_name = 'appmodels.sh'
-
-    def test_created_file(self):
-        result = subprocess.Popen(['bash %s' % self.script_name],
-                                  shell=True,
-                                  stdout=subprocess.PIPE,
-                                  stderr=subprocess.PIPE)
-        result_stderr = result.stderr.read()
-        result_stdout = result.stdout.read()
-        filename = str(datetime.date.today().strftime('%Y%m%d')) + '.dat'
-        data = open(filename, 'r').read()
-        self.assertEqual(0, len(result_stderr.splitlines()))
-        #duplicated and written to file?
-        self.assertEqual(
-            len(result_stdout.splitlines()), len(data.splitlines()))
-        os.remove(filename)
-
-
 class TestSignalRecivier(TestCase):
     fixtures = ['db_data.json']
 
