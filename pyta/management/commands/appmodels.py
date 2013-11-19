@@ -2,8 +2,6 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db.models import get_app
 from django.db.models import get_models
 from django.core.exceptions import ImproperlyConfigured
-import pyta
-import sys
 
 
 class Command(BaseCommand):

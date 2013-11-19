@@ -1,4 +1,3 @@
-from django import template
 from django.test import TestCase
 from django.template import Context
 from django.template import Template
@@ -7,7 +6,6 @@ from django.db.models import get_models
 from django.core.urlresolvers import reverse
 from models import UserInfo
 from models import RequestHistoryEntry
-from templatetags import pyta_extras
 from BeautifulSoup import BeautifulSoup
 import random
 import os
@@ -125,16 +123,16 @@ class TestEditView(TestCase):
     def test_edit_post_validdata(self):
         #valid data
         self.client.login(username='admin', password='admin')
-        response = self.client.post(reverse('edit'),
-                                    {'name': 'test',
-                                     'surname': 'test',
-                                     'birth_date': '1990-01-01',
-                                     'contact_email': 'test@example.com',
-                                     'contact_jabber': 'test@jabber.com',
-                                     'contact_skype': 'example',
-                                     'contact_phone': '123123123',
-                                     'contact_other': 'aexample icq',
-                                     'bio': 'example bio'})
+        self.client.post(reverse('edit'),
+                         {'name': 'test',
+                          'surname': 'test',
+                          'birth_date': '1990-01-01',
+                          'contact_email': 'test@example.com',
+                          'contact_jabber': 'test@jabber.com',
+                          'contact_skype': 'example',
+                          'contact_phone': '123123123',
+                          'contact_other': 'aexample icq',
+                          'bio': 'example bio'})
         edit_user = UserInfo.objects.get(pk=1)
         #user changed
         self.assertEqual(edit_user.name, 'test')
@@ -268,7 +266,7 @@ class TestShellScript(TestCase):
     def setUp(self):
         self.app = 'pyta'
         self.in_app = get_app(self.app)
-        self.script_name = 'appmodels'
+        self.script_name = 'appmodels.sh'
 
     def test_created_file(self):
         result = subprocess.Popen(['bash %s' % self.script_name],
