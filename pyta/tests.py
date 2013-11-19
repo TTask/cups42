@@ -6,6 +6,7 @@ from django.db.models import get_models
 from django.core.urlresolvers import reverse
 from models import UserInfo
 from models import RequestHistoryEntry
+from models import ModelHistoryEntry
 from BeautifulSoup import BeautifulSoup
 import random
 import os
@@ -288,3 +289,47 @@ class TestShellScript(TestCase):
         self.assertEqual(
             len(result_stdout.splitlines()), len(data.splitlines()))
         os.remove(filename)
+
+
+class TestSignalRecivier(TestCase):
+    fixtures = ['db_data.json']
+
+    def setUp(self):
+        self.model = UserInfo.objects.get(pk=1)
+        self.created_model = RequestHistoryEntry.objects.create(
+            request_path="/somepath",
+            request_method="POST")
+
+    def test_creation_signal(self):
+        creation_history_entry = ModelHistoryEntry.objects.latest(
+            'change_time')
+        self.assertEqual(
+            creation_history_entry.model_name,
+            self.created_model.__class__.__name__)
+        self.assertIn(
+            "CREATED",
+            creation_history_entry.__unicode__())
+
+    def test_modify_signal(self):
+        self.model.name = "Test"
+        self.model.save()
+        modify_history_entry = ModelHistoryEntry.objects.latest(
+            'change_time')
+        self.assertEqual(
+            modify_history_entry.model_name,
+            self.model.__class__.__name__)
+        self.assertIn(
+            "MODIFIED",
+            modify_history_entry.__unicode__())
+
+    def test_delete_signal(self):
+        model_name = self.model.__class__.__name__
+        self.model.delete()
+        delete_history_entry = ModelHistoryEntry.objects.latest(
+            'change_time')
+        self.assertEqual(
+            delete_history_entry.model_name,
+            model_name)
+        self.assertIn(
+            "DELETED",
+            delete_history_entry.__unicode__())

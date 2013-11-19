@@ -24,8 +24,34 @@ class UserInfo(models.Model):
     contact_other = models.TextField(blank=True, null=True,
                                      verbose_name='Other contacts')
 
+    def __unicode__(self):
+        return unicode("%s %s" % (self.name,
+                                  self.surname))
+    def repr(self):
+      return "%s %s" % (self.name, self.surname)
+
 
 class RequestHistoryEntry(models.Model):
     request_path = models.CharField(max_length=2048)
     request_method = models.CharField(max_length=64)
     request_time = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+      return unicode("%s %s" % (
+        self.request_path,
+        self.request_method))
+
+    def repr(self):
+      return "%s %s" % (self.request_path, self.request_method)
+
+
+class ModelHistoryEntry(models.Model):
+    model_name = models.CharField(max_length=256)
+    change_type = models.CharField(max_length=128)
+    change_time = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return unicode("%s has %s" % (self.model_name, self.change_type))
+
+    def repr(self):
+      return "%s %s" % (self.model_name, self.change_type)
