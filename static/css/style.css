@@ -14,7 +14,7 @@ body {
 
 .user-info {
     display: inline-block;
-    width: 50%;
+    width: 40%;
     height: 50%;
 }
 
@@ -40,7 +40,7 @@ body {
 	margin: auto;
 }
 .edit-table
-{	
+{
 	width: 43%;
 	display: inline-block;
 	margin: auto;
