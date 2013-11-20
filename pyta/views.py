@@ -94,15 +94,14 @@ def set_request_priority_view_ajax(request):
         try:
             request_history = RequestHistoryEntry.objects.filter(
                 request_path=form.cleaned_data['request_path']).all()
+            request_history.update(
+                request_priority=form.cleaned_data['request_priority'])
         except ObjectDoesNotExist:
             request_history = []
         priority_entry = RequestPriorityEntry.objects.get_or_create(
             request_path=form.cleaned_data['request_path'])[0]
         priority_entry.request_priority = form.cleaned_data['request_priority']
         priority_entry.save()
-        for http_req in request_history:
-            http_req.request_priority = form.cleaned_data['request_priority']
-            http_req.save()
         response['request_result'] = 'Priority changed successfull'
         return HttpResponse(json.dumps(response),
             content_type='application/json')
