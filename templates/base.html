@@ -4,7 +4,6 @@
   <head>
     <meta charset="utf-8">
     <title>42 Coffe Cups</title>
-
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/jquery-ui-1.10.3.custom.min.css' %}">
 
@@ -12,6 +11,8 @@
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
     <script type="text/javascript" src="http://malsup.github.io/jquery.form.js"></script>
     <script type="text/javascript" src="{% static 'js/site.js' %}"></script>
+        {% block head %}
+    {% endblock %}
   </head>
   <body>
     {% block content %}

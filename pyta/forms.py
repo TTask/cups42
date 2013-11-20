@@ -1,5 +1,6 @@
 from django import forms
 from models import UserInfo
+from models import RequestPriorityEntry
 from widgets import DatePickerWidget
 
 
@@ -14,3 +15,8 @@ class EditUserInfoForm(forms.ModelForm):
                 defaultDate: '-18y',
                 yearRange: 'c-20:c+10'""")
             }
+
+
+class EditRequestPriorityForm(forms.ModelForm):
+    class Meta:
+        model = RequestPriorityEntry

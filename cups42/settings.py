@@ -33,7 +33,7 @@ MIDDLEWARE_CLASSES = (
     'pyta.middleware.RequestStorage',
 )
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/login'
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",

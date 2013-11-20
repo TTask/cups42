@@ -36,6 +36,7 @@ class RequestHistoryEntry(models.Model):
     request_path = models.CharField(max_length=2048)
     request_method = models.CharField(max_length=64)
     request_time = models.DateTimeField(auto_now=True)
+    request_priority = models.IntegerField(default=0)
 
     def __unicode__(self):
         return unicode("%s %s" % (
@@ -56,3 +57,10 @@ class ModelHistoryEntry(models.Model):
 
     def repr(self):
         return "%s %s" % (self.model_name, self.change_type)
+
+
+class RequestPriorityEntry(models.Model):
+  request_path = models.CharField(max_length=2048,
+                                  verbose_name="Request path")
+  request_priority = models.IntegerField(default=0,
+                                        verbose_name="Priority")

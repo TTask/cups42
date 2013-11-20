@@ -4,14 +4,15 @@ from django.template import Template
 from django.db.models import get_app
 from django.db.models import get_models
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ObjectDoesNotExist
 from models import UserInfo
 from models import RequestHistoryEntry
 from models import ModelHistoryEntry
+from models import RequestPriorityEntry
 from BeautifulSoup import BeautifulSoup
 import random
-import os
+import re
 import subprocess
-import datetime
 
 
 class TestIndexView(TestCase):
@@ -55,8 +56,8 @@ class TestRequestHistoryView(TestCase):
             self.client.get(request)
         response = self.client.get(reverse('requests'))
         sp = BeautifulSoup(response.content)
-        requests_table_onpage = [elem.getText() for elem in sp.findAll
-                                 ('td', {'class': 'request-path'})]
+        requests_table_onpage = [elem.getText() for elem in sp.findAll(
+            'td', {'class': re.compile('request-path.*')})]
         self.assertEqual(request_path_done, requests_table_onpage)
 
 
@@ -311,3 +312,33 @@ class TestSignalRecivier(TestCase):
         self.assertIn(
             "DELETED",
             delete_history_entry.__unicode__())
+
+
+class TestChangeRequestPriority(TestCase):
+    fixtures = ['db_data.json']
+
+    def test_ajax_edition_priority_valid(self):
+        ''' Test for valid data submission'''
+        self.client.login(username='admin', password='admin')
+        response = self.client.post(
+            reverse('edit_request_priority'),
+            {'request_path': reverse('home'), 'request_priority': 1},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertIn('success', response.content)
+        priority_entry = RequestPriorityEntry.objects.get(pk=1)
+        self.client.get(reverse('home'))
+        request_entry = RequestHistoryEntry.objects.get(
+            request_path=reverse('home'))
+        self.assertEqual(
+            priority_entry.request_priority,
+            request_entry.request_priority)
+
+    def test_ajax_edition_priority_invalid(self):
+        ''' Test for invalid data submission'''
+        self.client.login(username='admin', password='admin')
+        response = self.client.post(
+            reverse('edit_request_priority'),
+            {'request_path': reverse('home'), 'request_priority': 'a'},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertIn('Error', response.content)
+

@@ -1,25 +1,46 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<script type="text/javascript" src="{% static 'js/jquery.tablesorter.min.js' %}"></script>
+{% endblock %}
 {% block content %}
-	<table class='requests-table'>
+	<table class="tablesorter" id="requests-table">
 		<thead>
-			<tr>
-				<th>10 First HTTP Requests</th>
-			</tr>
 			<tr>
 				<th>Request path</th>
 				<th>Request method</th>
+				<th>Request priority</th>
 				<th>Request time</th>
 			</tr>
 		</thead>
 		<tbody>
 			{% for request in first_requests %}
 				<tr>
-					<td class='request-path'>{{ request.request_path }}</td>
+					<td class='request-path clickable'>{{ request.request_path }}</td>
 					<td class='request-method'>{{ request.request_method }}</td>
+					<td class='request-priority'>{{ request.request_priority }}</td>
 					<td class='request-time'>{{ request.request_time }}</td>
 				</tr>
 			{% endfor %}
-
 		</tbody>
 	</table>
+	{% if user.is_authenticated %}
+		<div class='change-priority-form'>
+			<div id='result'>
+			</div>
+			<form  method='post' action='' id='change-request-priority'>
+				{% csrf_token %}
+				<table>
+					{{ form.as_table }}
+				</table>
+				<input type='submit' value='Save'>
+				<img id="progress-gif" src="{% static 'images/loading.gif' %}" style="display: none">
+			</form>
+	{% else %}
+		<a href="{% url 'login' %}?next={% url 'requests' %}">Edit requests priority</a>
+	{% endif %}
+			<script type="text/javascript">
+				$("#requests-table").tablesorter({});
+			</script>
+
 {% endblock %}
