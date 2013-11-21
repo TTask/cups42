@@ -189,11 +189,15 @@ class TestModelDisplaying(TestCase):
         self.not_exists_app = 'i_am_app'
         self.models = get_models(self.in_app)
 
+    def getResult(self, appname=''):
+        result = subprocess.Popen(['python manage.py appmodels %s' % appname],
+                                    shell=True,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE)
+        return result
+
     def test_displaing(self):
-        result = subprocess.Popen(['python manage.py appmodels %s' % self.app],
-                                  shell=True,
-                                  stdout=subprocess.PIPE,
-                                  stderr=subprocess.PIPE)
+        result = self.getResult(self.app)
         result_stdout = result.stdout.read()
         result_stderr = result.stderr.read()
         self.assertEqual(len(result_stdout.splitlines()),
@@ -203,19 +207,12 @@ class TestModelDisplaying(TestCase):
             self.assertIn("error:\tMODEL " + model.__name__, result_stderr)
 
     def test_invalid_app_name(self):
-        result = subprocess.Popen(['python manage.py appmodels %s' %
-                                  self.not_exists_app],
-                                  shell=True,
-                                  stdout=subprocess.PIPE,
-                                  stderr=subprocess.PIPE)
+        result = self.getResult(self.not_exists_app)
         result_err = result.stderr.read()
         self.assertIn('could not be found', result_err)
 
     def test_invalid_args(self):
-        result = subprocess.Popen(['python manage.py appmodels'],
-                                  shell=True,
-                                  stdout=subprocess.PIPE,
-                                  stderr=subprocess.PIPE)
+        result = self.getResult()
         result_err = result.stderr.read()
         self.assertIn('needs 1 argument', result_err)
 
