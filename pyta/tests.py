@@ -4,7 +4,6 @@ from django.template import Template
 from django.db.models import get_app
 from django.db.models import get_models
 from django.core.urlresolvers import reverse
-from django.core.exceptions import ObjectDoesNotExist
 from models import UserInfo
 from models import RequestHistoryEntry
 from models import ModelHistoryEntry
@@ -15,8 +14,13 @@ import re
 import subprocess
 
 
+TEST_LOGIN_USERNAME = 'admin'
+TEST_LOGIN_PASSWORD = 'admin'
+TEST_FIXTURES = ['db_data.json']
+
+
 class TestIndexView(TestCase):
-    fixtures = ['db_data.json']
+    fixtures = TEST_FIXTURES
 
     def setUp(self):
         self.user = UserInfo.objects.get(pk=1)
@@ -55,7 +59,7 @@ class TestRequestHistoryView(TestCase):
 
 
 class TestEditView(TestCase):
-    fixtures = ['db_data.json']
+    fixtures = TEST_FIXTURES
 
     def setUp(self):
         self.user_info = UserInfo.objects.get(pk=1)
@@ -74,7 +78,8 @@ class TestEditView(TestCase):
         self.new_attrs_valid['contact_email'] = 'test@example.com'
 
     def test_form_on_page(self):
-        self.client.login(username='admin', password='admin')
+        self.client.login(username=TEST_LOGIN_USERNAME,
+                          password=TEST_LOGIN_PASSWORD)
         response = self.client.get(reverse('edit'))
         for user_attr in self.user_info.attrDict().values():
             self.assertIn(str(user_attr), response.content)
@@ -87,30 +92,32 @@ class TestEditView(TestCase):
             response, reverse('login') + '?next=' + reverse('edit'))
 
     def test_edit_custom_widget(self):
-        self.client.login(username='admin', password='admin')
+        self.client.login(username=TEST_LOGIN_USERNAME,
+                          password=TEST_LOGIN_PASSWORD)
         response = self.client.get(reverse('edit'))
         self.assertIn("('#id_birth_date').datepicker", response.content)
 
     def test_edit_post_invaliddata(self):
-        self.client.login(username='admin', password='admin')
+        self.client.login(username=TEST_LOGIN_USERNAME,
+                          password=TEST_LOGIN_PASSWORD)
         response = self.client.post(reverse('edit'), self.new_attrs_invalid)
-        self.assertIn('Enter a valid date.', response.content)
-        self.assertIn('This field is required.', response.content)
         #errors are on page?
         sp = BeautifulSoup(response.content)
         error_list = sp.findAll('ul', {'class': 'errorlist'})
+        user = UserInfo.objects.get(pk=1)
         self.assertIn('Enter a valid date.', error_list[0].getText())
         self.assertIn('This field is required.', error_list[1].getText())
-        user = UserInfo.objects.get(pk=1)
+        self.assertIn('Enter a valid date.', response.content)
+        self.assertIn('This field is required.', response.content)
         for key, val in self.new_attrs_invalid.items():
             self.assertNotEqual(user.attrDict()[key], val)
         self.client.logout()
 
     def test_edit_post_validdata(self):
         #valid data
-        self.client.login(username='admin', password='admin')
-        self.client.post(reverse('edit'),
-                         self.new_attrs_valid)
+        self.client.login(username=TEST_LOGIN_USERNAME,
+                          password=TEST_LOGIN_PASSWORD)
+        self.client.post(reverse('edit'), self.new_attrs_valid)
         edited_user = UserInfo.objects.get(pk=1)
         #user changed
         for key, val in self.new_attrs_valid.items():
@@ -118,7 +125,8 @@ class TestEditView(TestCase):
         self.client.logout()
 
     def test_edit_ajax_validdata(self):
-        self.client.login(username='admin', password='admin')
+        self.client.login(username=TEST_LOGIN_USERNAME,
+                          password=TEST_LOGIN_PASSWORD)
         response = self.client.post(reverse('edit_ajax'),
                                     self.new_attrs_valid,
                                     HTTP_X_REQUESTED_WITH='XMLHttpRequest')
@@ -130,12 +138,13 @@ class TestEditView(TestCase):
             self.assertEqual(val, edited_user.attrDict()[key])
 
     def test_edit_ajax_invaliddata(self):
-        self.client.login(username='admin', password='admin')
+        self.client.login(username=TEST_LOGIN_USERNAME,
+                          password=TEST_LOGIN_PASSWORD)
         response = self.client.post(reverse('edit_ajax'),
                                     self.new_attrs_invalid,
                                     HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertIn('request_result', response.content)
-        self.assertIn('Error', response.content)
+        self.assertIn('Error occurred', response.content)
         edited_user = UserInfo.objects.get(pk=1)
         #user not changed
         for key, val in self.new_attrs_invalid.items():
@@ -143,7 +152,7 @@ class TestEditView(TestCase):
 
 
 class TestAdminLinkTag(TestCase):
-    fixtures = ['db_data.json']
+    fixtures = TEST_FIXTURES
 
     def setUp(self):
         self.user_model = UserInfo.objects.get(pk=1)
@@ -172,7 +181,7 @@ class TestAdminLinkTag(TestCase):
 
 
 class TestModelDisplaying(TestCase):
-    fixtures = ['db_data.json']
+    fixtures = TEST_FIXTURES
 
     def setUp(self):
         self.app = 'pyta'
@@ -212,7 +221,7 @@ class TestModelDisplaying(TestCase):
 
 
 class TestSignalRecivier(TestCase):
-    fixtures = ['db_data.json']
+    fixtures = TEST_FIXTURES
 
     def setUp(self):
         self.model = UserInfo.objects.get(pk=1)
@@ -223,9 +232,8 @@ class TestSignalRecivier(TestCase):
     def test_creation_signal(self):
         creation_history_entry = ModelHistoryEntry.objects.latest(
             'change_time')
-        self.assertEqual(
-            creation_history_entry.model_name,
-            self.created_model.__class__.__name__)
+        self.assertEqual(creation_history_entry.model_name,
+                         self.created_model.__class__.__name__)
         self.assertIn(
             "CREATED",
             creation_history_entry.__unicode__())
@@ -233,53 +241,44 @@ class TestSignalRecivier(TestCase):
     def test_modify_signal(self):
         self.model.name = "Test"
         self.model.save()
-        modify_history_entry = ModelHistoryEntry.objects.latest(
-            'change_time')
-        self.assertEqual(
-            modify_history_entry.model_name,
-            self.model.__class__.__name__)
-        self.assertIn(
-            "MODIFIED",
-            modify_history_entry.__unicode__())
+        modify_history_entry = ModelHistoryEntry.objects.latest('change_time')
+        self.assertEqual(modify_history_entry.model_name,
+                         self.model.__class__.__name__)
+        self.assertIn("MODIFIED", modify_history_entry.__unicode__())
 
     def test_delete_signal(self):
         model_name = self.model.__class__.__name__
         self.model.delete()
-        delete_history_entry = ModelHistoryEntry.objects.latest(
-            'change_time')
-        self.assertEqual(
-            delete_history_entry.model_name,
-            model_name)
-        self.assertIn(
-            "DELETED",
-            delete_history_entry.__unicode__())
+        delete_history_entry = ModelHistoryEntry.objects.latest('change_time')
+        self.assertEqual(delete_history_entry.model_name, model_name)
+        self.assertIn("DELETED", delete_history_entry.__unicode__())
 
 
 class TestChangeRequestPriority(TestCase):
-    fixtures = ['db_data.json']
+    fixtures = TEST_FIXTURES
 
     def test_ajax_edition_priority_valid(self):
         ''' Test for valid data submission'''
-        self.client.login(username='admin', password='admin')
+        self.client.login(username=TEST_LOGIN_USERNAME,
+                          password=TEST_LOGIN_PASSWORD)
         response = self.client.post(
             reverse('edit_request_priority'),
             {'request_path': reverse('home'), 'request_priority': 1},
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertIn('success', response.content)
         priority_entry = RequestPriorityEntry.objects.get(pk=1)
         self.client.get(reverse('home'))
         request_entry = RequestHistoryEntry.objects.get(
             request_path=reverse('home'))
-        self.assertEqual(
-            priority_entry.request_priority,
-            request_entry.request_priority)
+        self.assertIn('success', response.content)
+        self.assertEqual(priority_entry.request_priority,
+                         request_entry.request_priority)
 
     def test_ajax_edition_priority_invalid(self):
         ''' Test for invalid data submission'''
-        self.client.login(username='admin', password='admin')
+        self.client.login(username=TEST_LOGIN_USERNAME,
+                          password=TEST_LOGIN_PASSWORD)
         response = self.client.post(
             reverse('edit_request_priority'),
             {'request_path': reverse('home'), 'request_priority': 'a'},
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertIn('Error', response.content)
-
