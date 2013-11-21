@@ -24,15 +24,8 @@ class TestIndexView(TestCase):
     def test_index_view(self):
         response = self.client.get(reverse('home'))
         self.assertEqual(200, response.status_code)
-        self.assertTrue(self.user.name in response.content)
-        self.assertTrue(self.user.surname in response.content)
-        self.assertTrue(str(self.user.birth_date) in response.content)
-        self.assertTrue(str(self.user.bio) in response.content)
-        self.assertTrue(self.user.contact_phone in response.content)
-        self.assertTrue(str(self.user.contact_email) in response.content)
-        self.assertTrue(str(self.user.contact_jabber) in response.content)
-        self.assertTrue(self.user.contact_skype in response.content)
-        self.assertTrue(self.user.contact_other in response.content)
+        for user_attr in self.user.attrDict().values():
+            self.assertIn(str(user_attr), response.content)
 
 
 class TestRequestHistoryView(TestCase):
@@ -66,26 +59,32 @@ class TestEditView(TestCase):
 
     def setUp(self):
         self.user_info = UserInfo.objects.get(pk=1)
+        self.new_attrs_invalid = {
+            'name': 'test',
+            'surname': 'test',
+            'birth_date': '100',
+            'contact_email': '',
+            'contact_jabber': 'test@jabber.com',
+            'contact_skype': 'example',
+            'contact_phone': '123123123',
+            'contact_other': 'aexample icq',
+            'bio': 'example bio'}
+        self.new_attrs_valid = self.new_attrs_invalid.copy()
+        self.new_attrs_valid['birth_date'] = '1990-01-01'
+        self.new_attrs_valid['contact_email'] = 'test@example.com'
 
     def test_form_on_page(self):
         self.client.login(username='admin', password='admin')
         response = self.client.get(reverse('edit'))
-        self.assertTrue(self.user_info.name in response.content)
-        self.assertTrue(self.user_info.surname in response.content)
-        self.assertTrue(str(self.user_info.birth_date) in response.content)
-        self.assertTrue(self.user_info.contact_email in response.content)
-        self.assertTrue(self.user_info.contact_jabber in response.content)
-        self.assertTrue(self.user_info.contact_skype in response.content)
-        self.assertTrue(self.user_info.contact_phone in response.content)
-        self.assertTrue(str(self.user_info.contact_other) in response.content)
-        self.assertTrue(str(self.user_info.bio) in response.content)
+        for user_attr in self.user_info.attrDict().values():
+            self.assertIn(str(user_attr), response.content)
 
     def test_edit_wthout_login(self):
         self.client.logout()
         response = self.client.get(reverse('edit'))
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response,
-                             reverse('login') + '?next=' + reverse('edit'))
+        self.assertRedirects(
+            response, reverse('login') + '?next=' + reverse('edit'))
 
     def test_edit_custom_widget(self):
         self.client.login(username='admin', password='admin')
@@ -94,17 +93,7 @@ class TestEditView(TestCase):
 
     def test_edit_post_invaliddata(self):
         self.client.login(username='admin', password='admin')
-        #not valid data
-        response = self.client.post(reverse('edit'),
-                                    {'name': 'test',
-                                     'surname': 'test',
-                                     'birth_date': '100',
-                                     'contact_email': '',
-                                     'contact_jabber': 'test@jabber.com',
-                                     'contact_skype': 'example',
-                                     'contact_phone': '123123123',
-                                     'contact_other': 'aexample icq',
-                                     'bio': 'example bio'})
+        response = self.client.post(reverse('edit'), self.new_attrs_invalid)
         self.assertIn('Enter a valid date.', response.content)
         self.assertIn('This field is required.', response.content)
         #errors are on page?
@@ -112,95 +101,45 @@ class TestEditView(TestCase):
         error_list = sp.findAll('ul', {'class': 'errorlist'})
         self.assertIn('Enter a valid date.', error_list[0].getText())
         self.assertIn('This field is required.', error_list[1].getText())
-        #user not changed
         user = UserInfo.objects.get(pk=1)
-        self.assertNotEqual(user.name, 'test')
-        self.assertNotEqual(user.surname, 'test')
-        self.assertNotEqual(str(user.birth_date), '100')
-        self.assertNotEqual(user.contact_email, 'test@example.com')
-        self.assertNotEqual(user.contact_jabber, 'test@jabber.com')
-        self.assertNotEqual(user.contact_skype, 'example')
-        self.assertNotEqual(user.contact_phone, '123123123')
-        self.assertNotEqual(str(user.bio), 'example bio')
+        for key, val in self.new_attrs_invalid.items():
+            self.assertNotEqual(user.attrDict()[key], val)
         self.client.logout()
 
     def test_edit_post_validdata(self):
         #valid data
         self.client.login(username='admin', password='admin')
         self.client.post(reverse('edit'),
-                         {'name': 'test',
-                          'surname': 'test',
-                          'birth_date': '1990-01-01',
-                          'contact_email': 'test@example.com',
-                          'contact_jabber': 'test@jabber.com',
-                          'contact_skype': 'example',
-                          'contact_phone': '123123123',
-                          'contact_other': 'aexample icq',
-                          'bio': 'example bio'})
-        edit_user = UserInfo.objects.get(pk=1)
+                         self.new_attrs_valid)
+        edited_user = UserInfo.objects.get(pk=1)
         #user changed
-        self.assertEqual(edit_user.name, 'test')
-        self.assertEqual(edit_user.surname, 'test')
-        self.assertEqual(str(edit_user.birth_date), '1990-01-01')
-        self.assertEqual(edit_user.contact_email, 'test@example.com')
-        self.assertEqual(edit_user.contact_jabber, 'test@jabber.com')
-        self.assertEqual(edit_user.contact_skype, 'example')
-        self.assertEqual(edit_user.contact_phone, '123123123')
-        self.assertEqual(str(edit_user.bio), 'example bio')
+        for key, val in self.new_attrs_valid.items():
+            self.assertEqual(val, edited_user.attrDict()[key])
         self.client.logout()
 
     def test_edit_ajax_validdata(self):
         self.client.login(username='admin', password='admin')
         response = self.client.post(reverse('edit_ajax'),
-                                    {'name': 'test',
-                                     'surname': 'test',
-                                     'birth_date': '1990-01-01',
-                                     'contact_email': 'test@example.com',
-                                     'contact_jabber': 'test@jabber.com',
-                                     'contact_skype': 'example',
-                                     'contact_phone': '123123123',
-                                     'contact_other': 'example icq',
-                                     'bio': 'example bio'},
+                                    self.new_attrs_valid,
                                     HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertIn('request_result', response.content)
         self.assertIn('Successfuly saved.', response.content)
-        userinfo = UserInfo.objects.get(pk=1)
+        edited_user = UserInfo.objects.get(pk=1)
         #user changed
-        self.assertEqual(userinfo.name, u'test')
-        self.assertEqual(userinfo.surname, 'test')
-        self.assertEqual(str(userinfo.birth_date), '1990-01-01')
-        self.assertEqual(userinfo.contact_email, 'test@example.com')
-        self.assertEqual(userinfo.contact_jabber, 'test@jabber.com')
-        self.assertEqual(userinfo.contact_skype, 'example')
-        self.assertEqual(userinfo.contact_phone, '123123123')
-        self.assertEqual(str(userinfo.bio), 'example bio')
+        for key, val in self.new_attrs_valid.items():
+            self.assertEqual(val, edited_user.attrDict()[key])
 
     def test_edit_ajax_invaliddata(self):
         self.client.login(username='admin', password='admin')
         response = self.client.post(reverse('edit_ajax'),
-                                    {'name': 'test',
-                                     'surname': 'test',
-                                     'birth_date': '1111',
-                                     'contact_email': 'test@example.com',
-                                     'contact_jabber': 'test@jabber.com',
-                                     'contact_skype': 'example',
-                                     'contact_phone': '123123123',
-                                     'contact_other': 'example icq',
-                                     'bio': 'example bio'},
+                                    self.new_attrs_invalid,
                                     HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertIn('request_result', response.content)
         self.assertIn('Error', response.content)
-        self.assertIn
-        userinfo = UserInfo.objects.get(pk=1)
+        edited_user = UserInfo.objects.get(pk=1)
         #user not changed
-        self.assertNotEqual(userinfo.name, u'test')
-        self.assertNotEqual(userinfo.surname, 'test')
-        self.assertNotEqual(str(userinfo.birth_date), '1990-01-01')
-        self.assertNotEqual(userinfo.contact_email, 'test@example.com')
-        self.assertNotEqual(userinfo.contact_jabber, 'test@jabber.com')
-        self.assertNotEqual(userinfo.contact_skype, 'example')
-        self.assertNotEqual(userinfo.contact_phone, '123123123')
-        self.assertNotEqual(str(userinfo.bio), 'example bio')
+        for key, val in self.new_attrs_invalid.items():
+            self.assertNotEqual(val, edited_user.attrDict()[key])
 
 
 class TestAdminLinkTag(TestCase):
@@ -243,7 +182,8 @@ class TestModelDisplaying(TestCase):
 
     def test_displaing(self):
         result = subprocess.Popen(['python manage.py appmodels %s' % self.app],
-                                  shell=True, stdout=subprocess.PIPE,
+                                  shell=True,
+                                  stdout=subprocess.PIPE,
                                   stderr=subprocess.PIPE)
         result_stdout = result.stdout.read()
         result_stderr = result.stderr.read()
@@ -256,7 +196,8 @@ class TestModelDisplaying(TestCase):
     def test_invalid_app_name(self):
         result = subprocess.Popen(['python manage.py appmodels %s' %
                                   self.not_exists_app],
-                                  shell=True, stdout=subprocess.PIPE,
+                                  shell=True,
+                                  stdout=subprocess.PIPE,
                                   stderr=subprocess.PIPE)
         result_err = result.stderr.read()
         self.assertIn('could not be found', result_err)

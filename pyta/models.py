@@ -31,6 +31,13 @@ class UserInfo(models.Model):
     def repr(self):
         return "%s %s" % (self.name, self.surname)
 
+    def attrDict(self):
+        attribute_dict = {}
+        for attr, value in self.__dict__.iteritems():
+          if not attr.startswith('_') and attr != 'id':
+            attribute_dict[str(attr)] = str(value)
+        return attribute_dict
+
 
 class RequestHistoryEntry(models.Model):
     request_path = models.CharField(max_length=2048)
