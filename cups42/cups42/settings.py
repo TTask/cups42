@@ -4,7 +4,6 @@ import south
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = 'v1%#$8(d!6o)o1q8yk1e3v=+*q*!)qzf09=n0zy&f3ihv647q%'
-SOUTH_TESTS_MIGRATE = False
 
 
 DEBUG = True
@@ -61,8 +60,7 @@ TEMPLATE_LOADERS = (
 
 STATIC_URL = '/static/'
 STATIC_ROOT = '/static/'
-STATICFILES_DIRS = ( os.path.join(BASE_DIR,'static'),
-)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -95,8 +93,5 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-
-
 MEDIA_URL = '/media/'
-MEDIA_ROOT =  'media/'
-
+MEDIA_ROOT = 'media/'

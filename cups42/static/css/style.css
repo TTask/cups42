@@ -1,20 +1,35 @@
-body {
+body
+{
     width: 50%;
     margin: auto;
-
 }
+
+.content
+{
+    width: 100%;
+    display: inline-block;
+}
+
+.user-menu
+{
+    margin-top: 10px;
+    border-top: 1px solid black;
+}
+
 .user-profile
 {
 	overflow: auto;
 }
 
-.user-info {
+.user-info
+{
     display: inline-block;
     width: 50%;
     height: 50%;
 }
 
-.contacts {
+.contacts
+{
 	float: right;
 }
 
@@ -30,21 +45,44 @@ body {
 	width: 30%;
 }
 
-.edit-form
+.block
 {
-	width: 100%;
-	margin: auto;
-}
-.edit-table
-{	
-	width: 43%;
-	display: inline-block;
-	margin: auto;
-	height: 200x;
+    display: inline-block;
 }
 
-#user-photo-preview
-{
-	width: 320px;
-	height: 400px;
+.right-block
+{   width: 50%;
+    float: right;
 }
+
+.left-block
+{
+    float: left;
+    width: 50%;
+
+}
+
+.submit-set
+{
+    vertical-align: bottom;
+}
+
+.input-label
+{
+    width: 90px;
+}
+.form-control
+{
+    display: inline-block;
+}
+.field-error
+{
+    margin-left: 110px;
+    max-width: 250px;
+}
+.error-text
+{
+    font-size: 0.8em;
+}
+
+

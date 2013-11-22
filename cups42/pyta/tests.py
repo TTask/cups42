@@ -1,17 +1,21 @@
 from django.test import TestCase
+from django.core.urlresolvers import reverse
 from models import UserInfo
 from models import RequestHistoryEntry
-import views
-from django.core.urlresolvers import reverse
-import random
-import re
 from BeautifulSoup import BeautifulSoup
+import views
+import random
+
+
+TEST_USER_LOGIN = 'admin'
+TEST_USER_PASSWORD = 'admin'
+TEST_FIXTURES = ['db_data.json']
 
 
 class TestIndexView(TestCase):
-    
+    fixtures = TEST_FIXTURES
+
     def setUp(self):
-        fixtures = ['initial_data.json']
         self.user = UserInfo.objects.get(pk=1)
 
     def test_index_view(self):
@@ -39,25 +43,30 @@ class TestRequestHistoryView(TestCase):
 
     def test_history_page(self):
         requests_limit = 10
-        request_path_done = []          #this is requests done by test
+        #requests done by test
+        request_path_done = []
         request_paths = [reverse('home'), reverse('requests')]
         while requests_limit > 0:
             request = random.choice(request_paths)
             request_path_done.append(request)
-            requests_limit-=1
+            requests_limit -= 1
             self.client.get(request)
         response = self.client.get(reverse('requests'))
         sp = BeautifulSoup(response.content)
-        requests_table_onpage = [elem.getText() for elem in sp.findAll('td', {'class': 'request-path'})]
+        requests_table_onpage = [elem.getText() for elem in sp.findAll(
+            'td', {'class': 'request-path'})]
         self.assertEqual(request_path_done, requests_table_onpage)
 
+
 class TestEditView(TestCase):
+    fixtures = TEST_FIXTURES
+
     def setUp(self):
-        fixtures = ['initial_data.json']
         self.user_info = UserInfo.objects.get(pk=1)
 
     def test_form_on_page(self):
-        self.client.login(username='admin', password='admin')
+        self.client.login(username=TEST_USER_LOGIN,
+                          password=TEST_USER_PASSWORD)
         response = self.client.get(reverse('edit'))
         self.assertTrue(self.user_info.name in response.content)
         self.assertTrue(self.user_info.surname in response.content)
@@ -72,16 +81,24 @@ class TestEditView(TestCase):
     def test_edit_wthout_login(self):
         self.client.logout()
         response = self.client.get(reverse('edit'))
-        self.assertRedirects(response, reverse('login') + '?next=' + reverse('edit'))
+        self.assertRedirects(
+            response,
+            reverse('login') + '?next=' + reverse('edit'))
 
     def test_edit_post_invaliddata(self):
-        self.client.login(username='admin', password='admin')
-
+        self.client.login(username=TEST_USER_LOGIN,
+                          password=TEST_USER_PASSWORD)
         #not valid data
-        response = self.client.post(reverse('edit'), {'name':'test', 'surname':'test', 
-            'birth_date': '100', 'contact_email': 'test@example.com', 'contact_jabber': 'test@jabber.com', 
-            'contact_skype' :'example', 'contact_phone' :'123123123', 'contact_other' :'aexample icq', 
-            'bio' : 'example bio'})
+        response = self.client.post(reverse('edit'),
+                                    {'name': 'test',
+                                     'surname': 'test',
+                                     'birth_date': '100',
+                                     'contact_email': 'test@example.com',
+                                     'contact_jabber': 'test@jabber.com',
+                                     'contact_skype': 'example',
+                                     'contact_phone': '123123123',
+                                     'contact_other': 'aexample icq',
+                                     'bio': 'example bio'})
         user = UserInfo.objects.get(pk=1)
         self.assertNotEqual(user.name, 'test')
         self.assertNotEqual(user.surname, 'test')
@@ -94,11 +111,18 @@ class TestEditView(TestCase):
         self.client.logout()
 
     def test_edit_post_validdata(self):
-        self.client.login(username='admin', password='admin')
-        response = self.client.post(reverse('edit'), {'name':'test', 'surname':'test', 
-            'birth_date': '1990-01-01', 'contact_email': 'test@example.com', 'contact_jabber': 'test@jabber.com', 
-            'contact_skype' :'example', 'contact_phone' :'123123123', 'contact_other' :'aexample icq', 
-            'bio' : 'example bio'})
+        self.client.login(username=TEST_USER_LOGIN,
+                          password=TEST_USER_PASSWORD)
+        response = self.client.post(reverse('edit'),
+                                    {'name': 'test',
+                                     'surname': 'test',
+                                     'birth_date': '1990-01-01',
+                                     'contact_email': 'test@example.com',
+                                     'contact_jabber': 'test@jabber.com',
+                                     'contact_skype': 'example',
+                                     'contact_phone': '123123123',
+                                     'contact_other': 'aexample icq',
+                                     'bio': 'example bio'})
         edit_user = UserInfo.objects.get(pk=1)
         self.assertEqual(response.content, '')
         self.assertEqual(edit_user.name, 'test')
