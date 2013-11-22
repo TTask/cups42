@@ -1,10 +1,7 @@
 
-	$(document).ready( function() {
+	$(document).ready( function(){
 
-
-
-		function clearFileInput()
-			{
+		function clearFileInput(){
     			var oldInput = document.getElementById("id_photo");
     			var newInput = document.createElement("input");
     			newInput.type = "file";
@@ -26,27 +23,22 @@
 			};
 		};
 
-		function beforeEditSubmit() {
+		function beforeEditSubmit(){
 			$(".edit-form").find("input, textarea").attr('disabled', true);
 			$(".edit-form").find(".error-input").removeClass('error-input');
 			$("#progress-gif").fadeIn('slow');
-
-
 		};
-
 
 		function afterEditSubmit(responseText, statusText, xhr, $form) {
 			$("#progress-gif").fadeOut('slow');
-			setTimeout( function() {
+			setTimeout( function(){
 				$(".edit-form").find("input, textarea").attr('disabled', false);
 			}, 1000);
 			showResult(responseText);
 			clearFileInput();
 		};
 
-
 		$(".edit-form").ajaxForm({
-
 			beforeSubmit: beforeEditSubmit,
 			success: afterEditSubmit,
 			fail: afterEditSubmit,
@@ -58,7 +50,6 @@
 			$($form).find('input').attr('disabled', false);
 			$("#progress-gif").fadeOut('slow');
 			showResult(responseText);
-
 		};
 
 		function beforePriorityEditSubmit(){
@@ -69,7 +60,6 @@
 		};
 
 		$("#change-request-priority").ajaxForm({
-
 			beforeSubmit: beforePriorityEditSubmit,
 			success: afterPriorityEditSubmit,
 			fail: afterPriorityEditSubmit,
@@ -77,9 +67,8 @@
 			dataType: 'json'
 		});
 
-		$(".request-path").on('click', function(event) {
+		$(".request-path").on('click', function(event){
 			event.preventDefault();
 			$('#id_request_path').val($(this).text());
 		});
-
 });

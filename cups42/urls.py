@@ -13,7 +13,7 @@ urlpatterns = patterns(
     url(r'^$', 'pyta.views.home_view', name='home'),
     url(r'^index$', 'pyta.views.home_view', name='home'),
     url(r'^edit$', 'pyta.views.edit_view', name='edit'),
-    url(r'^edit_ajax', 'pyta.views.edit_view_ajax', name='edit_ajax'),
+    url(r'^edit_ajax$', 'pyta.views.edit_view_ajax', name='edit_ajax'),
     url(r'^edit_request_priority$',
         'pyta.views.set_request_priority_view_ajax',
         name='edit_request_priority'),
