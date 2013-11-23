@@ -28,19 +28,19 @@
 		<div class='change-priority-form'>
 			<div id='result'>
 			</div>
-			<form  method='post' action='' id='change-request-priority'>
+			<form  method='post' action='.' id='change-request-priority'>
 				{% csrf_token %}
 				<table>
 					{{ form.as_table }}
 				</table>
 				<input type='submit' value='Save'>
-				<img id="progress-gif" src="{% static 'images/loading.gif' %}" style="display: none">
+				<img id="progress-gif" src="{% static 'images/loading.gif' %}" style="display: none" alt="Loading...">
 			</form>
+		</div>
 	{% else %}
 		<a href="{% url 'login' %}?next={% url 'requests' %}">Edit requests priority</a>
 	{% endif %}
-			<script type="text/javascript">
-				$("#requests-table").tablesorter({});
-			</script>
-
+	<script type="text/javascript">
+			$("#requests-table").tablesorter({});
+	</script>
 {% endblock %}
