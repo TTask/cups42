@@ -193,8 +193,11 @@ class TestModelDisplaying(TestCase):
         self.not_exists_app = 'i_am_app'
         self.models = get_models(self.in_app)
 
-    def command_call(args, app_name=''):
-        args = [app_name]
+    def command_out(args, app_name=None):
+        if app_name != None:
+            args = [app_name]
+        else:
+            args = []
         opts = {}
         err = StringIO()
         out = StringIO()
@@ -205,15 +208,17 @@ class TestModelDisplaying(TestCase):
         return std_out, std_err
 
     def test_model_displaying(self):
-        std_out, std_err = self.command_call(self.app)
+        std_out, std_err = self.command_out(self.app)
         self.assertEqual(len(std_out.splitlines()),
                          len(std_err.splitlines()))
 
     def test_nonexists_app(self):
-        self.assertRaises(self.command_call(self.not_exists_app),
-                          CommandError)
+        with self.assertRaises(CommandError):
+            self.command_out(self.not_exists_app)
 
-
+    def test_empty_args(self):
+        with self.assertRaises(CommandError):
+            self.command_out()
 
 
 class TestSignalRecivier(TestCase):
