@@ -194,14 +194,14 @@ class TestModelDisplaying(TestCase):
         self.models = get_models(self.in_app)
 
     def command_out(args, app_name=None):
-        if app_name != None:
+        if app_name is not None:
             args = [app_name]
         else:
             args = []
         opts = {}
         err = StringIO()
         out = StringIO()
-        call_command('appmodels',stdout=out, stderr=err, *args, **opts)
+        call_command('appmodels', stdout=out, stderr=err, *args, **opts)
         err.seek(0), out.seek(0)
         std_out = out.read()
         std_err = err.read()

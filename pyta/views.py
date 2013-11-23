@@ -37,13 +37,13 @@ def edit_view(request):
     '''Edit user info view, allows user to edit data
     represented on the main page'''
     user_info = UserInfo.objects.get_or_create(pk=1)[0]
-    if request.method=='GET':
+    if request.method == 'GET':
         edit_form = EditUserInfoForm(instance=user_info)
         return render_to_response('edit.html', {'edit_form': edit_form},
                                   context_instance=RequestContext(request))
     edit_form = EditUserInfoForm(request.POST or None,
-                                request.FILES,
-                                instance=user_info)
+                                 request.FILES,
+                                 instance=user_info)
     if edit_form.is_valid():
         edit_form.save()
         return redirect(reverse('home'))
@@ -52,7 +52,6 @@ def edit_view(request):
             'edit.html',
             {'edit_form': edit_form},
             context_instance=RequestContext(request))
-
 
 
 @login_required(login_url='/login')
@@ -100,14 +99,10 @@ def set_request_priority_view_ajax(request):
         priority_entry.save()
         response['request_result'] = 'Priority changed successfull'
         return HttpResponse(json.dumps(response),
-            content_type='application/json')
+                            content_type='application/json')
     else:
         response = dict(
-            [field, error] for field,error in form.errors.items())
+            [field, error] for field, error in form.errors.items())
         response['request_result'] = 'Error occurred'
         return HttpResponse(json.dumps(response),
-            content_type='application/json')
-
-
-
-
+                            content_type='application/json')

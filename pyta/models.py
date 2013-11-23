@@ -37,8 +37,8 @@ class UserInfo(models.Model):
     def attrDict(self):
         attribute_dict = {}
         for attr, value in self.__dict__.iteritems():
-          if not attr.startswith('_') and attr != 'id':
-            attribute_dict[str(attr)] = str(value)
+            if not attr.startswith('_') and attr != 'id':
+                attribute_dict[str(attr)] = str(value)
         return attribute_dict
 
 
@@ -70,10 +70,10 @@ class ModelHistoryEntry(models.Model):
 
 
 class RequestPriorityEntry(models.Model):
-  request_path = models.CharField(max_length=2048,
-                                  verbose_name="Request path")
-  request_priority = models.IntegerField(default=0,
-                                        verbose_name="Priority")
+    request_path = models.CharField(max_length=2048,
+                                    verbose_name="Request path")
+    request_priority = models.IntegerField(default=0,
+                                           verbose_name="Priority")
 
 
 #-----------------------------------------------------------------------------#
@@ -104,4 +104,3 @@ def delete_handler(sender, **kwargs):
             change_type="DELETED")
     except:
         return
-
