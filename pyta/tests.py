@@ -4,14 +4,18 @@ from django.template import Template
 from django.db.models import get_app
 from django.db.models import get_models
 from django.core.urlresolvers import reverse
+from django.core.management import call_command
+from django.core.management.base import CommandError
+from django.core.management.base import ImproperlyConfigured
 from models import UserInfo
 from models import RequestHistoryEntry
 from models import ModelHistoryEntry
 from models import RequestPriorityEntry
+from management.commands import appmodels
 from BeautifulSoup import BeautifulSoup
+from StringIO import StringIO
 import random
 import re
-import subprocess
 
 
 TEST_LOGIN_USERNAME = 'admin'
@@ -189,32 +193,27 @@ class TestModelDisplaying(TestCase):
         self.not_exists_app = 'i_am_app'
         self.models = get_models(self.in_app)
 
-    def getResult(self, appname=''):
-        result = subprocess.Popen(['python manage.py appmodels %s' % appname],
-                                    shell=True,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE)
-        return result
+    def command_call(args, app_name=''):
+        args = [app_name]
+        opts = {}
+        err = StringIO()
+        out = StringIO()
+        call_command('appmodels',stdout=out, stderr=err, *args, **opts)
+        err.seek(0), out.seek(0)
+        std_out = out.read()
+        std_err = err.read()
+        return std_out, std_err
 
-    def test_displaing(self):
-        result = self.getResult(self.app)
-        result_stdout = result.stdout.read()
-        result_stderr = result.stderr.read()
-        self.assertEqual(len(result_stdout.splitlines()),
-                         len(result_stderr.splitlines()))
-        for model in self.models:
-            self.assertIn(model.__name__, result_stdout)
-            self.assertIn("error:\tMODEL " + model.__name__, result_stderr)
+    def test_model_displaying(self):
+        std_out, std_err = self.command_call(self.app)
+        self.assertEqual(len(std_out.splitlines()),
+                         len(std_err.splitlines()))
 
-    def test_invalid_app_name(self):
-        result = self.getResult(self.not_exists_app)
-        result_err = result.stderr.read()
-        self.assertIn('could not be found', result_err)
+    def test_nonexists_app(self):
+        self.assertRaises(self.command_call(self.not_exists_app),
+                          CommandError)
 
-    def test_invalid_args(self):
-        result = self.getResult()
-        result_err = result.stderr.read()
-        self.assertIn('needs 1 argument', result_err)
+
 
 
 class TestSignalRecivier(TestCase):
