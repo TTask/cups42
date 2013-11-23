@@ -1,50 +1,99 @@
-body {
+body
+{
     width: 50%;
     margin: auto;
+}
 
-}
-.useredit-menu
+.content
 {
-	float: right;
+    width: 100%;
+    display: inline-block;
 }
+
+.user-menu
+{
+    margin-top: 10px;
+    border-top: 1px solid black;
+}
+
+.user-edit-menu
+{
+    float: right;
+    margin-top: 3%;
+}
+
+.inline-block
+{
+    display: inline-block;
+}
+
 .user-profile
 {
-	overflow: auto;
+        overflow: auto;
 }
 
-.user-info {
+.user-info
+{
     display: inline-block;
-    width: 40%;
+    width: 50%;
     height: 50%;
 }
 
-.contacts {
-	float: right;
+.contacts
+{
+        float: right;
+}
+
+.requests-table
+{
+    width: 50%;
+    margin: auto;
 }
 
 .right-column
 {
-	display: block;
-	width: 30%;
+        display: block;
+        width: 30%;
 }
 
-.edit-form
+.block
 {
-	width: 100%;
-	margin: auto;
+    display: inline-block;
 }
-.edit-table
+
+.right-block
+{ width: 50%;
+    float: right;
+}
+
+.left-block
 {
-	width: 43%;
-	display: inline-block;
-	margin: auto;
+    float: left;
+    width: 50%;
 
 }
 
-#user-photo-preview
+.submit-set
 {
-	width: 320px;
-	height: 400px;
+    vertical-align: bottom;
+}
+
+.input-label
+{
+    width: 90px;
+}
+.form-control
+{
+    display: inline-block;
+}
+.field-error
+{
+    margin-left: 110px;
+    max-width: 250px;
+}
+.error-text
+{
+    font-size: 0.8em;
 }
 
 .error-input

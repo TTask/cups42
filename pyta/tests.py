@@ -107,7 +107,7 @@ class TestEditView(TestCase):
         response = self.client.post(reverse('edit'), self.new_attrs_invalid)
         #errors are on page?
         sp = BeautifulSoup(response.content)
-        error_list = sp.findAll('ul', {'class': 'errorlist'})
+        error_list = sp.findAll('div', {'class': re.compile('field-error.*')})
         user = UserInfo.objects.get(pk=1)
         self.assertIn('Enter a valid date.', error_list[0].getText())
         self.assertIn('This field is required.', error_list[1].getText())

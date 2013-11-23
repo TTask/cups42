@@ -2,12 +2,11 @@
 {% block content %}
 {% load thumbnail %}
 {% load pyta_extras %}
-<div class='useredit-menu'>
-    <a href="{% url 'edit' %}">Edit</a>
-    <a href="{% get_admin_link user_info %}">(admin)</a>
+    <h2 class="inline-block">42 Coffee Cups Testing Assigment</h2>
+<div class="user-edit-menu">
+    <a class="inline-block" href="{% url 'edit' %}">Edit</a>
+    <a class="inline-block" href="{% get_admin_link user_info %}">(admin)</a>
 </div>
-<h2>42 Coffee Cups Testing Assigment</h2>
-
 <div class="user-profile">
     <div class="user-info credentials">
         <div id="user-name">
